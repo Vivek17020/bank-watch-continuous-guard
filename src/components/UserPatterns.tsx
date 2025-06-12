@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, HeatMapGrid } from 'recharts';
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import { User, Clock, MapPin, Smartphone, Activity, TrendingUp } from 'lucide-react';
 
 const UserPatterns = () => {
@@ -58,7 +58,7 @@ const UserPatterns = () => {
     { hour: '06', Mon: 3, Tue: 2, Wed: 4, Thu: 3, Fri: 2, Sat: 1, Sun: 1 },
     { hour: '09', Mon: 8, Tue: 9, Wed: 7, Thu: 8, Fri: 6, Sat: 3, Sun: 2 },
     { hour: '12', Mon: 5, Tue: 6, Wed: 4, Thu: 5, Fri: 7, Sat: 4, Sun: 3 },
-    { hour: '15', Mon: 4, Tue: 3, Wed: 5, Thu: 4, Fri: 3, Sun: 2 },
+    { hour: '15', Mon: 4, Tue: 3, Wed: 5, Thu: 4, Fri: 3, Sat: 2, Sun: 2 },
     { hour: '18', Mon: 6, Tue: 7, Wed: 6, Thu: 5, Fri: 8, Sat: 4, Sun: 3 },
     { hour: '21', Mon: 3, Tue: 2, Wed: 4, Thu: 3, Fri: 5, Sat: 6, Sun: 4 },
   ];
@@ -83,6 +83,13 @@ const UserPatterns = () => {
 
   const getTrendIcon = (trend: string) => {
     return trend === 'up' ? '↗️' : trend === 'down' ? '↘️' : '→';
+  };
+
+  const getHeatmapColor = (value: number) => {
+    if (value === 0) return '#374151';
+    if (value <= 2) return '#10b981';
+    if (value <= 5) return '#f59e0b';
+    return '#ef4444';
   };
 
   return (
@@ -254,9 +261,7 @@ const UserPatterns = () => {
                           key={`${rowIndex}-${colIndex}`}
                           className="aspect-square rounded flex items-center justify-center text-xs text-white"
                           style={{
-                            backgroundColor: value === 0 ? '#374151' : 
-                                           value <= 2 ? '#10b981' : 
-                                           value <= 5 ? '#f59e0b' : '#ef4444'
+                            backgroundColor: getHeatmapColor(Number(value))
                           }}
                         >
                           {value || ''}
