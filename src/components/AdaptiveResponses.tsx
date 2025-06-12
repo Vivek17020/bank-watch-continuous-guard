@@ -5,413 +5,337 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertTriangle, Shield, Lock, Eye, Clock, Settings } from 'lucide-react';
+import { Progress } from "@/components/ui/progress";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Shield, Lock, AlertTriangle, Smartphone, Battery, Zap, Users, Eye, Settings } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 
 const AdaptiveResponses = () => {
-  const [autoResponse, setAutoResponse] = useState(true);
-  const [riskThreshold, setRiskThreshold] = useState([65]);
-  const [mfaEnabled, setMfaEnabled] = useState(true);
-  const [sessionLimiting, setSessionLimiting] = useState(true);
+  const { toast } = useToast();
+  const [responseSettings, setResponseSettings] = useState({
+    autoResponse: true,
+    stepUpAuth: true,
+    sessionLimiting: true,
+    adaptiveUI: true,
+    riskThreshold: [65],
+    energyOptimization: true
+  });
 
-  const responseRules = [
+  const responseActions = [
     {
       id: 1,
-      name: 'High Risk Location',
-      trigger: 'User logs in from unusual geographic location',
-      action: 'Require additional MFA',
-      severity: 'high',
-      enabled: true,
-      threshold: 80
+      trigger: 'High Risk Score (>80%)',
+      action: 'Immediate Session Termination',
+      frequency: 12,
+      successRate: 98,
+      impact: 'High Security',
+      energyCost: 'Low',
+      icon: Lock
     },
     {
       id: 2,
-      name: 'Behavioral Anomaly',
-      trigger: 'Significant deviation in typing or touch patterns',
-      action: 'Limit session duration to 15 minutes',
-      severity: 'medium',
-      enabled: true,
-      threshold: 70
+      trigger: 'Medium Risk Score (50-80%)',
+      action: 'Step-up Authentication (MFA)',
+      frequency: 45,
+      successRate: 94,
+      impact: 'Balanced',
+      energyCost: 'Medium',
+      icon: Shield
     },
     {
       id: 3,
-      name: 'Device Change',
-      trigger: 'Login from unrecognized device',
-      action: 'Send notification and require device registration',
-      severity: 'medium',
-      enabled: true,
-      threshold: 60
+      trigger: 'Location Anomaly',
+      action: 'Limited Feature Access',
+      frequency: 23,
+      successRate: 89,
+      impact: 'User Friendly',
+      energyCost: 'Low',
+      icon: Smartphone
     },
     {
       id: 4,
-      name: 'Time-based Anomaly',
-      trigger: 'Login outside normal hours',
-      action: 'Enable enhanced monitoring',
-      severity: 'low',
-      enabled: false,
-      threshold: 50
-    },
-    {
-      id: 5,
-      name: 'Multiple Failed Attempts',
-      trigger: 'Repeated authentication failures',
-      action: 'Temporarily block account',
-      severity: 'high',
-      enabled: true,
-      threshold: 90
+      trigger: 'Behavioral Deviation',
+      action: 'Enhanced Monitoring',
+      frequency: 67,
+      successRate: 92,
+      impact: 'Non-intrusive',
+      energyCost: 'Very Low',
+      icon: Eye
     }
   ];
 
-  const recentActions = [
-    {
-      id: 1,
-      timestamp: '2024-06-12 14:23:45',
-      user: 'user_2847',
-      trigger: 'High Risk Location',
-      action: 'MFA Required',
-      status: 'success',
-      details: 'User successfully completed additional authentication'
-    },
-    {
-      id: 2,
-      timestamp: '2024-06-12 13:45:12',
-      user: 'user_1923',
-      trigger: 'Behavioral Anomaly',
-      action: 'Session Limited',
-      status: 'active',
-      details: 'Session duration reduced to 15 minutes'
-    },
-    {
-      id: 3,
-      timestamp: '2024-06-12 12:15:33',
-      user: 'user_5641',
-      trigger: 'Device Change',
-      action: 'Device Registration',
-      status: 'pending',
-      details: 'User notification sent, awaiting device verification'
-    }
+  const responseEffectiveness = [
+    { method: 'Session Termination', prevented: 98, falsePositives: 2 },
+    { method: 'Step-up Auth', prevented: 94, falsePositives: 6 },
+    { method: 'Feature Limiting', prevented: 89, falsePositives: 11 },
+    { method: 'Enhanced Monitoring', prevented: 85, falsePositives: 15 }
   ];
 
-  const privacySettings = [
-    {
-      category: 'Data Collection',
-      setting: 'Behavioral Data Retention',
-      value: '30 days',
-      description: 'How long to store user behavioral patterns'
-    },
-    {
-      category: 'Analytics',
-      setting: 'Anonymization Level',
-      value: 'High',
-      description: 'Level of user data anonymization for analytics'
-    },
-    {
-      category: 'Sharing',
-      setting: 'Third-party Integration',
-      value: 'Disabled',
-      description: 'Share behavioral insights with partner services'
-    },
-    {
-      category: 'Compliance',
-      setting: 'GDPR Compliance',
-      value: 'Enabled',
-      description: 'Full compliance with data protection regulations'
-    }
+  const energyOptimization = [
+    { component: 'ML Processing', current: 23, optimized: 18 },
+    { component: 'Sensor Monitoring', current: 15, optimized: 12 },
+    { component: 'Data Transmission', current: 8, optimized: 6 },
+    { component: 'UI Updates', current: 5, optimized: 4 }
   ];
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'low': return 'text-green-400';
-      case 'medium': return 'text-yellow-400';
-      case 'high': return 'text-red-400';
-      default: return 'text-slate-400';
-    }
+  const privacyCompliance = [
+    { regulation: 'GDPR', status: 'Compliant', score: 98 },
+    { regulation: 'DPDP Act', status: 'Compliant', score: 96 },
+    { regulation: 'Local IT Laws', status: 'Compliant', score: 94 },
+    { regulation: 'Banking Regulations', status: 'Compliant', score: 99 }
+  ];
+
+  const userExperience = [
+    { name: 'Seamless', value: 78, color: '#10b981' },
+    { name: 'Minor Friction', value: 18, color: '#f59e0b' },
+    { name: 'Significant Friction', value: 4, color: '#ef4444' }
+  ];
+
+  const handleSettingChange = (setting: string, value: any) => {
+    setResponseSettings(prev => ({
+      ...prev,
+      [setting]: value
+    }));
+    
+    toast({
+      title: "Settings Updated",
+      description: `${setting} has been ${typeof value === 'boolean' ? (value ? 'enabled' : 'disabled') : 'updated'}`,
+    });
   };
 
-  const getSeverityBadge = (severity: string) => {
-    switch (severity) {
-      case 'low': return 'default';
-      case 'medium': return 'secondary';
-      case 'high': return 'destructive';
-      default: return 'outline';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'success': return 'text-green-400';
-      case 'active': return 'text-blue-400';
-      case 'pending': return 'text-yellow-400';
-      case 'failed': return 'text-red-400';
-      default: return 'text-slate-400';
-    }
+  const triggerResponse = (action: any) => {
+    toast({
+      title: "Response Triggered",
+      description: `${action.action} has been activated`,
+    });
   };
 
   return (
     <div className="space-y-6">
-      {/* System Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-slate-800/50 border-slate-700 p-6">
-          <div className="flex items-center gap-3">
-            <Shield className="h-6 w-6 text-green-400" />
-            <div>
-              <p className="text-slate-400 text-sm">Active Rules</p>
-              <p className="text-2xl font-bold text-white">{responseRules.filter(r => r.enabled).length}</p>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-white">Adaptive Security Responses</h2>
+          <p className="text-slate-400">Privacy-preserving, energy-efficient security automation</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Battery className="h-4 w-4 text-green-400" />
+          <span className="text-sm text-slate-400">Energy Optimized</span>
+        </div>
+      </div>
+
+      {/* Response Configuration */}
+      <Card className="bg-slate-800/50 border-slate-700 p-6">
+        <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+          <Settings className="h-5 w-5 text-blue-400" />
+          Response Configuration
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-white">Automatic Responses</span>
+              <Switch 
+                checked={responseSettings.autoResponse}
+                onCheckedChange={(value) => handleSettingChange('autoResponse', value)}
+              />
             </div>
+            <div className="flex items-center justify-between">
+              <span className="text-white">Step-up Authentication</span>
+              <Switch 
+                checked={responseSettings.stepUpAuth}
+                onCheckedChange={(value) => handleSettingChange('stepUpAuth', value)}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-white">Session Limiting</span>
+              <Switch 
+                checked={responseSettings.sessionLimiting}
+                onCheckedChange={(value) => handleSettingChange('sessionLimiting', value)}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-white">Adaptive UI Support</span>
+              <Switch 
+                checked={responseSettings.adaptiveUI}
+                onCheckedChange={(value) => handleSettingChange('adaptiveUI', value)}
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="text-white block mb-2">Risk Threshold: {responseSettings.riskThreshold[0]}%</label>
+              <Slider
+                value={responseSettings.riskThreshold}
+                onValueChange={(value) => handleSettingChange('riskThreshold', value)}
+                max={100}
+                step={5}
+                className="w-full"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-white">Energy Optimization</span>
+              <Switch 
+                checked={responseSettings.energyOptimization}
+                onCheckedChange={(value) => handleSettingChange('energyOptimization', value)}
+              />
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Response Actions */}
+      <Card className="bg-slate-800/50 border-slate-700 p-6">
+        <h3 className="text-xl font-semibold text-white mb-6">Active Response Strategies</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {responseActions.map((action) => {
+            const IconComponent = action.icon;
+            return (
+              <div key={action.id} className="p-4 bg-slate-700/50 rounded-lg border border-slate-600">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <IconComponent className="h-5 w-5 text-blue-400" />
+                    <div>
+                      <h4 className="text-white font-medium">{action.action}</h4>
+                      <p className="text-sm text-slate-400">{action.trigger}</p>
+                    </div>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => triggerResponse(action)}
+                  >
+                    Test
+                  </Button>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-slate-400">Success Rate</p>
+                    <p className="text-white font-medium">{action.successRate}%</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Frequency</p>
+                    <p className="text-white font-medium">{action.frequency}/day</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Impact</p>
+                    <Badge variant="outline">{action.impact}</Badge>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Energy Cost</p>
+                    <Badge variant="secondary">{action.energyCost}</Badge>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+
+      {/* Response Effectiveness */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="bg-slate-800/50 border-slate-700 p-6">
+          <h3 className="text-xl font-semibold text-white mb-4">Response Effectiveness</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={responseEffectiveness}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis dataKey="method" stroke="#9ca3af" />
+                <YAxis stroke="#9ca3af" />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
+                  labelStyle={{ color: '#f3f4f6' }}
+                />
+                <Bar dataKey="prevented" fill="#10b981" name="Threats Prevented %" />
+                <Bar dataKey="falsePositives" fill="#ef4444" name="False Positives %" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </Card>
 
         <Card className="bg-slate-800/50 border-slate-700 p-6">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="h-6 w-6 text-orange-400" />
-            <div>
-              <p className="text-slate-400 text-sm">Actions Today</p>
-              <p className="text-2xl font-bold text-white">12</p>
-            </div>
+          <h3 className="text-xl font-semibold text-white mb-4">User Experience Impact</h3>
+          <div className="h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={userExperience}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={40}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {userExperience.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
-        </Card>
-
-        <Card className="bg-slate-800/50 border-slate-700 p-6">
-          <div className="flex items-center gap-3">
-            <Eye className="h-6 w-6 text-blue-400" />
-            <div>
-              <p className="text-slate-400 text-sm">Success Rate</p>
-              <p className="text-2xl font-bold text-white">94.8%</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="bg-slate-800/50 border-slate-700 p-6">
-          <div className="flex items-center gap-3">
-            <Clock className="h-6 w-6 text-purple-400" />
-            <div>
-              <p className="text-slate-400 text-sm">Avg Response</p>
-              <p className="text-2xl font-bold text-white">1.2s</p>
-            </div>
+          <div className="flex justify-center gap-4 mt-4">
+            {userExperience.map((item, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <div 
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: item.color }}
+                />
+                <span className="text-sm text-slate-300">{item.name}</span>
+              </div>
+            ))}
           </div>
         </Card>
       </div>
 
-      <Tabs defaultValue="rules" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 bg-slate-800/50 border-slate-700">
-          <TabsTrigger value="rules" className="data-[state=active]:bg-blue-600">Response Rules</TabsTrigger>
-          <TabsTrigger value="actions" className="data-[state=active]:bg-blue-600">Recent Actions</TabsTrigger>
-          <TabsTrigger value="settings" className="data-[state=active]:bg-blue-600">Configuration</TabsTrigger>
-          <TabsTrigger value="privacy" className="data-[state=active]:bg-blue-600">Privacy & Compliance</TabsTrigger>
-        </TabsList>
+      {/* Energy Optimization */}
+      <Card className="bg-slate-800/50 border-slate-700 p-6">
+        <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+          <Zap className="h-5 w-5 text-yellow-400" />
+          Energy Optimization Performance
+        </h3>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={energyOptimization}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <XAxis dataKey="component" stroke="#9ca3af" />
+              <YAxis stroke="#9ca3af" />
+              <Tooltip 
+                contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
+                labelStyle={{ color: '#f3f4f6' }}
+              />
+              <Bar dataKey="current" fill="#64748b" name="Current Usage (mAh)" />
+              <Bar dataKey="optimized" fill="#10b981" name="Optimized Usage (mAh)" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
 
-        <TabsContent value="rules">
-          <Card className="bg-slate-800/50 border-slate-700">
-            <div className="p-6 border-b border-slate-700">
-              <h3 className="text-xl font-semibold text-white">Adaptive Response Rules</h3>
-              <p className="text-slate-400 mt-2">Configure automated responses to detected anomalies</p>
-            </div>
-            <div className="divide-y divide-slate-700">
-              {responseRules.map((rule) => (
-                <div key={rule.id} className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h4 className="font-medium text-white">{rule.name}</h4>
-                        <Badge variant={getSeverityBadge(rule.severity)}>
-                          {rule.severity.toUpperCase()}
-                        </Badge>
-                        <Switch 
-                          checked={rule.enabled} 
-                          onCheckedChange={() => {/* Handle rule toggle */}}
-                        />
-                      </div>
-                      <p className="text-sm text-slate-400 mb-2">{rule.trigger}</p>
-                      <p className="text-sm text-slate-300">
-                        <strong>Action:</strong> {rule.action}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-sm text-slate-400">Risk Threshold</span>
-                        <span className="text-sm text-white">{rule.threshold}%</span>
-                      </div>
-                      <Slider
-                        value={[rule.threshold]}
-                        max={100}
-                        step={5}
-                        className="w-full"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="actions">
-          <Card className="bg-slate-800/50 border-slate-700">
-            <div className="p-6 border-b border-slate-700">
-              <h3 className="text-xl font-semibold text-white">Recent Adaptive Actions</h3>
-              <p className="text-slate-400 mt-2">Actions automatically taken by the system</p>
-            </div>
-            <div className="divide-y divide-slate-700">
-              {recentActions.map((action) => (
-                <div key={action.id} className="p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h4 className="font-medium text-white">{action.trigger}</h4>
-                        <Badge variant="outline" className={getStatusColor(action.status)}>
-                          {action.status.toUpperCase()}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-slate-400 mb-1">User: {action.user}</p>
-                      <p className="text-sm text-slate-400 mb-2">{action.timestamp}</p>
-                      <p className="text-sm text-slate-300">{action.details}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline">View Details</Button>
-                    {action.status === 'pending' && (
-                      <Button size="sm" variant="default">Approve</Button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="settings">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="bg-slate-800/50 border-slate-700 p-6">
-              <h3 className="text-xl font-semibold text-white mb-4">Global Settings</h3>
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-white font-medium">Auto Response</p>
-                    <p className="text-sm text-slate-400">Enable automatic responses to threats</p>
-                  </div>
-                  <Switch 
-                    checked={autoResponse} 
-                    onCheckedChange={setAutoResponse}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-white font-medium">Multi-Factor Authentication</p>
-                    <p className="text-sm text-slate-400">Require MFA for high-risk scenarios</p>
-                  </div>
-                  <Switch 
-                    checked={mfaEnabled} 
-                    onCheckedChange={setMfaEnabled}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-white font-medium">Session Limiting</p>
-                    <p className="text-sm text-slate-400">Limit session duration for anomalies</p>
-                  </div>
-                  <Switch 
-                    checked={sessionLimiting} 
-                    onCheckedChange={setSessionLimiting}
-                  />
-                </div>
-
-                <div>
-                  <div className="flex justify-between mb-3">
-                    <span className="text-white font-medium">Global Risk Threshold</span>
-                    <span className="text-white">{riskThreshold[0]}%</span>
-                  </div>
-                  <Slider
-                    value={riskThreshold}
-                    onValueChange={setRiskThreshold}
-                    max={100}
-                    step={5}
-                    className="w-full"
-                  />
-                  <p className="text-sm text-slate-400 mt-2">
-                    Minimum risk level to trigger automated responses
-                  </p>
-                </div>
+      {/* Privacy Compliance */}
+      <Card className="bg-slate-800/50 border-slate-700 p-6">
+        <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+          <Shield className="h-5 w-5 text-green-400" />
+          Privacy & Compliance Status
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {privacyCompliance.map((item, index) => (
+            <div key={index} className="text-center p-4 bg-slate-700/50 rounded-lg">
+              <h4 className="text-white font-medium mb-2">{item.regulation}</h4>
+              <Progress value={item.score} className="mb-2" />
+              <div className="flex items-center justify-between">
+                <Badge variant="default">{item.status}</Badge>
+                <span className="text-sm text-slate-400">{item.score}%</span>
               </div>
-            </Card>
-
-            <Card className="bg-slate-800/50 border-slate-700 p-6">
-              <h3 className="text-xl font-semibold text-white mb-4">Performance Optimization</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
-                  <div>
-                    <p className="text-white font-medium">Battery Optimization</p>
-                    <p className="text-sm text-slate-400">Reduce power consumption</p>
-                  </div>
-                  <Badge variant="default">ENABLED</Badge>
-                </div>
-
-                <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
-                  <div>
-                    <p className="text-white font-medium">Edge Processing</p>
-                    <p className="text-sm text-slate-400">Process data locally when possible</p>
-                  </div>
-                  <Badge variant="default">ENABLED</Badge>
-                </div>
-
-                <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
-                  <div>
-                    <p className="text-white font-medium">Adaptive Sampling</p>
-                    <p className="text-sm text-slate-400">Adjust data collection frequency</p>
-                  </div>
-                  <Badge variant="secondary">OPTIMIZED</Badge>
-                </div>
-
-                <Button className="w-full mt-4">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Advanced Configuration
-                </Button>
-              </div>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="privacy">
-          <Card className="bg-slate-800/50 border-slate-700 p-6">
-            <h3 className="text-xl font-semibold text-white mb-4">Privacy & Compliance Settings</h3>
-            <div className="space-y-6">
-              {privacySettings.map((setting, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <Badge variant="outline">{setting.category}</Badge>
-                      <p className="text-white font-medium">{setting.setting}</p>
-                    </div>
-                    <p className="text-sm text-slate-400">{setting.description}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-white font-medium">{setting.value}</p>
-                    <Button size="sm" variant="outline" className="mt-2">
-                      Configure
-                    </Button>
-                  </div>
-                </div>
-              ))}
             </div>
-
-            <div className="mt-8 p-4 bg-blue-900/20 border border-blue-700 rounded-lg">
-              <div className="flex items-center gap-3 mb-2">
-                <Lock className="h-5 w-5 text-blue-400" />
-                <h4 className="text-blue-400 font-medium">Data Protection</h4>
-              </div>
-              <p className="text-slate-300 text-sm">
-                All behavioral data is encrypted at rest and in transit. User patterns are anonymized 
-                and cannot be traced back to individual users in analytics dashboards.
-              </p>
-            </div>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 };
