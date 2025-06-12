@@ -3,12 +3,14 @@ import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import BehavioralDashboard from '@/components/BehavioralDashboard';
 import RiskAssessment from '@/components/RiskAssessment';
 import AnomalyDetection from '@/components/AnomalyDetection';
 import UserPatterns from '@/components/UserPatterns';
 import AdaptiveResponses from '@/components/AdaptiveResponses';
-import { Shield, Activity, AlertTriangle, Users } from 'lucide-react';
+import { Shield, Activity, AlertTriangle, Users, LogIn } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
   const [currentRiskLevel, setCurrentRiskLevel] = useState('low');
@@ -44,6 +46,14 @@ const Index = () => {
           <div className="flex items-center justify-center gap-3 mb-4">
             <Shield className="h-8 w-8 text-blue-400" />
             <h1 className="text-4xl font-bold text-white">BankWatch</h1>
+            <div className="ml-auto">
+              <Link to="/signin">
+                <Button variant="outline" className="bg-slate-800/50 border-slate-600 text-white hover:bg-slate-700">
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Sign In
+                </Button>
+              </Link>
+            </div>
           </div>
           <p className="text-xl text-slate-300 mb-2">Continuous Guard - Behavior-Based Authentication</p>
           <p className="text-slate-400 max-w-2xl mx-auto">
