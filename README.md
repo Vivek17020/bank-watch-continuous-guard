@@ -129,17 +129,6 @@ npm run build
 - Minimal resource consumption
 - Offline capability support
 
-## Contributing
-
-We welcome contributions to enhance the platform's security capabilities. Please ensure all contributions maintain the highest security standards and follow established coding practices.
-
-## License
-
-This project is proprietary software developed for banking security applications. All rights reserved.
-
-## Support
-
-For technical support or security inquiries, please contact the BankWatch security team.
 
 ---
 
