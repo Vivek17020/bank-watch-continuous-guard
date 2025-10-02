@@ -117,41 +117,59 @@ export function TrendingArticles() {
     );
   }
 
+  // Group articles by category
+  const articlesByCategory = articles.reduce((acc, article) => {
+    const categoryName = article.categories.name;
+    if (!acc[categoryName]) {
+      acc[categoryName] = {
+        color: article.categories.color,
+        articles: []
+      };
+    }
+    acc[categoryName].articles.push(article);
+    return acc;
+  }, {} as Record<string, { color: string; articles: TrendingArticle[] }>);
+
   return (
-    <div className="space-y-4">
-      {articles.map((article, index) => (
-        <Link
-          key={article.id}
-          to={`/article/${article.slug}`}
-          className="block group"
-        >
-          <div className="flex gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0">
-              {index + 1}
-            </div>
-            <div className="flex-1 min-w-0 space-y-1">
-              <h4 className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors">
-                {article.title}
-              </h4>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Badge 
-                  variant="secondary" 
-                  className="text-xs"
-                  style={{ backgroundColor: `${article.categories.color}20` }}
-                >
-                  {article.categories.name}
-                </Badge>
-                <div className="flex items-center gap-1">
-                  <Eye className="h-3 w-3" />
-                  {article.views_count}
-                </div>
-                <span>
-                  {formatDistanceToNow(new Date(article.published_at), { addSuffix: true })}
-                </span>
-              </div>
-            </div>
+    <div className="space-y-6">
+      {Object.entries(articlesByCategory).map(([categoryName, { color, articles: categoryArticles }]) => (
+        <div key={categoryName} className="space-y-3">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-primary" />
+            <h3 
+              className="font-semibold text-sm uppercase tracking-wide"
+              style={{ color: color }}
+            >
+              {categoryName}
+            </h3>
           </div>
-        </Link>
+          <div className="space-y-2">
+            {categoryArticles.map((article) => (
+              <Link
+                key={article.id}
+                to={`/article/${article.slug}`}
+                className="block group"
+              >
+                <div className="flex gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <h4 className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors">
+                      {article.title}
+                    </h4>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Eye className="h-3 w-3" />
+                        {article.views_count}
+                      </div>
+                      <span>
+                        {formatDistanceToNow(new Date(article.published_at), { addSuffix: true })}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
       ))}
     </div>
   );
