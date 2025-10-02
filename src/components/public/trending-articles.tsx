@@ -131,34 +131,34 @@ export function TrendingArticles() {
   }, {} as Record<string, { color: string; articles: TrendingArticle[] }>);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {Object.entries(articlesByCategory).map(([categoryName, { color, articles: categoryArticles }]) => (
-        <div key={categoryName} className="space-y-3">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-primary" />
+        <div key={categoryName} className="space-y-4">
+          <div className="flex items-center gap-2 border-b pb-2">
+            <TrendingUp className="h-5 w-5" style={{ color: color }} />
             <h3 
-              className="font-semibold text-sm uppercase tracking-wide"
+              className="font-bold text-lg uppercase tracking-wide"
               style={{ color: color }}
             >
               {categoryName}
             </h3>
           </div>
-          <div className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {categoryArticles.map((article) => (
               <Link
                 key={article.id}
                 to={`/article/${article.slug}`}
                 className="block group"
               >
-                <div className="flex gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                  <div className="flex-1 min-w-0 space-y-1">
-                    <h4 className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors">
+                <div className="p-4 rounded-lg border bg-card hover:shadow-lg transition-all">
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-sm line-clamp-2 group-hover:text-primary transition-colors">
                       {article.title}
                     </h4>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Eye className="h-3 w-3" />
-                        {article.views_count}
+                        <span>{article.views_count}</span>
                       </div>
                       <span>
                         {formatDistanceToNow(new Date(article.published_at), { addSuffix: true })}
