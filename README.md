@@ -1,135 +1,73 @@
+# Welcome to your Lovable project
 
-# BankWatch - Behavior-Based Authentication Platform
+## Project info
 
-## Overview
+**URL**: https://lovable.dev/projects/107da7ce-f26e-4ff3-b60e-d2d83e58e2e2
 
-BankWatch is an innovative mobile banking security platform that implements behavior-based continuous authentication to protect users from sophisticated cyber threats. The platform continuously monitors user behavior patterns and detects anomalies in real-time to prevent fraud and unauthorized access.
+## How can I edit this code?
 
-## Features
+There are several ways of editing your application.
 
-### 🔐 Continuous Authentication
-- Real-time behavioral monitoring during banking sessions
-- Machine learning-powered pattern recognition
-- Non-intrusive security verification
+**Use Lovable**
 
-### 📊 Advanced Analytics
-- Comprehensive risk assessment dashboard
-- Behavioral pattern analysis and visualization
-- Anomaly detection with intelligent scoring
+Simply visit the [Lovable Project](https://lovable.dev/projects/107da7ce-f26e-4ff3-b60e-d2d83e58e2e2) and start prompting.
 
-### 🛡️ Adaptive Security
-- Dynamic response system based on risk levels
-- Session management and access controls
-- Privacy-compliant security measures
+Changes made via Lovable will be committed automatically to this repo.
 
-### 📱 Mobile-First Design
-- Optimized for mobile banking applications
-- Energy-efficient monitoring algorithms
-- Seamless user experience
+**Use your preferred IDE**
 
-## Technical Architecture
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-### Frontend Technologies
-- **React 18** - Modern component-based UI framework
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first styling framework
-- **Shadcn/UI** - Professional component library
-- **Recharts** - Data visualization and charting
-- **React Query** - Efficient data fetching and state management
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-### Key Components
-- **Behavioral Dashboard** - Real-time monitoring interface
-- **Risk Assessment** - Comprehensive security scoring
-- **Anomaly Detection** - Intelligent threat identification
-- **User Pattern Analysis** - Behavioral trend visualization
-- **Adaptive Responses** - Dynamic security controls
+Follow these steps:
 
-## Security Features
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
 
-### Behavioral Metrics Monitored
-- **Typing Patterns** - Speed, rhythm, and pressure analysis
-- **Touch Gestures** - Swipe patterns and touch dynamics
-- **Navigation Flow** - App usage patterns and sequences
-- **Device Handling** - Orientation and movement patterns
-- **Temporal Patterns** - Login times and session durations
-- **Location Intelligence** - Geolocation trend analysis
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
 
-### Fraud Detection Capabilities
-- Real-time anomaly scoring
-- Machine learning-based threat detection
-- Adaptive threshold management
-- False positive minimization
-- Privacy-preserving analytics
+# Step 3: Install the necessary dependencies.
+npm i
 
-## Installation & Setup
-
-### Prerequisites
-- Node.js 18+ and npm
-- Modern web browser with JavaScript enabled
-
-### Getting Started
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd bankwatch-platform
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-4. **Access the application**
-   - Open your browser and navigate to `http://localhost:8080`
-   - The platform will be available with sample behavioral data
-
-### Build for Production
-```bash
-npm run build
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
 ```
 
-## Usage
+**Edit a file directly in GitHub**
 
-### Dashboard Navigation
-1. **Risk Overview** - Monitor overall security status
-2. **Behavioral Analysis** - Review user pattern insights
-3. **Anomaly Detection** - Track security threats
-4. **Adaptive Controls** - Manage security responses
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-### Configuration
-- Adjust risk thresholds through the dashboard interface
-- Configure alert preferences for different threat levels
-- Customize behavioral monitoring parameters
+**Use GitHub Codespaces**
 
-## Privacy & Compliance
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-### Data Protection
-- End-to-end encryption for all behavioral data
-- Privacy-by-design architecture
-- Minimal data collection principles
-- User consent management
+## What technologies are used for this project?
 
-### Regulatory Compliance
-- GDPR compliant data handling
-- Banking security standards adherence
-- Local privacy regulation support
-- Audit trail maintenance
+This project is built with:
 
-## Performance Optimization
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
 
-### Mobile Efficiency
-- Lightweight behavioral monitoring
-- Battery-optimized algorithms
-- Minimal resource consumption
-- Offline capability support
+## How can I deploy this project?
 
+Simply open [Lovable](https://lovable.dev/projects/107da7ce-f26e-4ff3-b60e-d2d83e58e2e2) and click on Share -> Publish.
 
----
+## Can I connect a custom domain to my Lovable project?
 
-**BankWatch** - Protecting digital banking through intelligent behavior analysis.
+Yes, you can!
+
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
