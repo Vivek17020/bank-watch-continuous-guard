@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,13 +9,42 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Link } from "react-router-dom";
 import { User, Settings, LogOut, Shield } from "lucide-react";
 
 export function UserMenu() {
   const { user, isAdmin, signOut } = useAuth();
+  const isMobile = useIsMobile();
 
   if (!user) {
+    // Mobile: show user icon with dropdown
+    if (isMobile) {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
+              <User className="h-4 w-4" />
+              <span className="sr-only">User menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem asChild>
+              <Link to="/auth" className="cursor-pointer">
+                Sign In
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/auth" className="cursor-pointer">
+                Sign Up
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+
+    // Desktop: show both buttons
     return (
       <div className="flex items-center space-x-2">
         <Button variant="ghost" size="sm" asChild>
