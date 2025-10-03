@@ -88,12 +88,11 @@ export default function NewsHomepage() {
                   <PushNotificationButton />
                   <Button
                     variant="default"
-                    size="sm"
+                    size="icon"
                     onClick={() => navigate('/subscription')}
-                    className="gap-2 bg-gradient-to-r from-primary to-primary/80"
+                    className="bg-gradient-to-r from-primary to-primary/80"
                   >
                     <Crown className="h-4 w-4" />
-                    Go Premium
                   </Button>
                 </div>
               </div>
