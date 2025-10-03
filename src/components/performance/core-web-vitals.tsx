@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 // Enhanced Core Web Vitals monitoring component
 export function CoreWebVitals() {

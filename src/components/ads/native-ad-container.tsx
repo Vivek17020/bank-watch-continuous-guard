@@ -1,7 +1,7 @@
 import { AdSlot } from './ad-slot';
 import { AffiliateProductCard } from '@/components/monetization/affiliate-product-card';
 import { Card, CardContent } from '@/components/ui/card';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface NativeAdContainerProps {
   position: 'between-articles' | 'sidebar' | 'in-article';

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { supabase } from '@/integrations/supabase/client';
 

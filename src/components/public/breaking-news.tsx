@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useArticles } from '@/hooks/use-articles';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';

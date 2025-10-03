@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { usePersonalizedFeed } from '@/hooks/use-personalized-feed';
 import { ArticleCard } from '@/components/public/article-card';
 import { Button } from '@/components/ui/button';

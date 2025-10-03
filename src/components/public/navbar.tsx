@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useCategories } from "@/hooks/use-articles";
 import { FileText, Menu, X, Search } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SearchDialog } from "@/components/public/search-dialog";
 import { UserMenu } from "@/components/public/user-menu";
