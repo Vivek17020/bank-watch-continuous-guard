@@ -27,13 +27,14 @@ export default async function handler(req, res) {
     twoDaysAgo.setHours(twoDaysAgo.getHours() - 48);
     const twoDaysAgoISO = twoDaysAgo.toISOString();
 
-    // Query articles from last 48 hours
+    // Query articles from last 48 hours (limit to 1000 per Google News requirements)
     const { data: articles, error } = await supabase
       .from('articles')
       .select('slug, title, excerpt, image_url, tags, published_at, created_at, categories(name)')
       .eq('published', true)
       .gte('published_at', twoDaysAgoISO)
-      .order('published_at', { ascending: false });
+      .order('published_at', { ascending: false })
+      .limit(1000);
 
     if (error) {
       console.error('Supabase query error:', error);
