@@ -1,7 +1,7 @@
 // Service Worker for TheBulletinBriefs PWA
-const CACHE_NAME = 'bulletin-briefs-v1';
-const STATIC_CACHE = 'bulletin-static-v1';
-const DYNAMIC_CACHE = 'bulletin-dynamic-v1';
+const CACHE_NAME = 'bulletin-briefs-v2';
+const STATIC_CACHE = 'bulletin-static-v2';
+const DYNAMIC_CACHE = 'bulletin-dynamic-v2';
 
 // Assets to cache immediately
 const STATIC_ASSETS = [
@@ -44,7 +44,25 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch event - serve from cache with network fallback
+// Message handler for cache control
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    event.waitUntil(
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => caches.delete(cacheName))
+        );
+      }).then(() => {
+        self.clients.claim();
+      })
+    );
+  }
+});
+
+// Fetch event - network-first for HTML, cache-first for assets
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   
@@ -54,6 +72,33 @@ self.addEventListener('fetch', (event) => {
   // Skip external requests
   if (!request.url.startsWith(self.location.origin)) return;
 
+  const isHTMLRequest = request.mode === 'navigate' || 
+                        request.destination === 'document' ||
+                        request.headers.get('accept')?.includes('text/html');
+
+  // Network-first strategy for HTML to prevent blank screens
+  if (isHTMLRequest) {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          if (response && response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(DYNAMIC_CACHE).then(cache => {
+              cache.put(request, responseToCache);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache if network fails
+          return caches.match(request)
+            .then(cached => cached || caches.match('/offline.html'));
+        })
+    );
+    return;
+  }
+
+  // Cache-first strategy for static assets (JS, CSS, images)
   event.respondWith(
     caches.match(request)
       .then(cachedResponse => {
@@ -67,7 +112,7 @@ self.addEventListener('fetch', (event) => {
         return fetch(request)
           .then(response => {
             // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type !== 'basic') {
+            if (!response || response.status !== 200) {
               return response;
             }
             
@@ -81,10 +126,7 @@ self.addEventListener('fetch', (event) => {
             return response;
           })
           .catch(() => {
-            // Network failed, try to return offline page for navigation requests
-            if (request.mode === 'navigate') {
-              return caches.match('/offline.html');
-            }
+            return new Response('Offline', { status: 503 });
           });
       })
   );
