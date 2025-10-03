@@ -1,10 +1,9 @@
 // api/news-sitemap.xml.js
 // Vercel serverless function for Google News sitemap
 
-import 'dotenv/config';
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Only allow GET requests
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -12,7 +11,7 @@ export default async function handler(req, res) {
 
   try {
     // Initialize Supabase client with server-side env vars
-    const supabaseUrl = process.env.VITE_SUPABASE_URL;
+    const supabaseUrl = 'https://tadcyglvsjycpgsjkywj.supabase.co';
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !supabaseServiceKey) {
