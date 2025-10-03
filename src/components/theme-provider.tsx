@@ -1,4 +1,4 @@
-import { ReactNode } from "react"
+import React, { ReactNode } from "react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 
 interface ThemeProviderProps {
