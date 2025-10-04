@@ -240,10 +240,13 @@ export default function ArticlePage() {
                   src={article.image_url}
                   alt={article.title}
                   className="w-full aspect-[16/9] object-cover"
-                  loading="lazy"
+                  width="1200"
+                  height="675"
+                  loading="eager"
+                  fetchPriority="high"
                   decoding="async"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-                  style={{ objectFit: 'cover', width: '100%', height: 'auto' }}
+                  style={{ objectFit: 'cover', width: '100%', height: 'auto', aspectRatio: '16/9' }}
                 />
               </div>
             )}
