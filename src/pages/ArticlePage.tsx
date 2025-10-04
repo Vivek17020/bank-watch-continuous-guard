@@ -109,7 +109,7 @@ export default function ArticlePage() {
   }
 
   const publishedDate = article.published_at ? new Date(article.published_at) : new Date(article.created_at);
-  const currentUrl = `${window.location.origin}${location.pathname}`;
+  const currentUrl = `${window.location.origin}${window.location.pathname}`;
   
   // Auto-generate SEO keywords from article content
   const seoKeywords = generateSEOKeywords(article.title, article.content, article.tags);
