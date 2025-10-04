@@ -200,7 +200,7 @@ export default function ArticlePage() {
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <User className="h-4 w-4" />
-                    <span>By {article.author}</span>
+                    <span>By TheBulletinBriefs</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />

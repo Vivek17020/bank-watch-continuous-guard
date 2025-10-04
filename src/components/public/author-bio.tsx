@@ -24,9 +24,9 @@ export function AuthorBio({ authorId, authorName }: AuthorBioProps) {
     enabled: !!authorId,
   });
 
-  const displayName = authorProfile?.full_name || authorName;
-  const jobTitle = authorProfile?.job_title || 'Journalist';
-  const bio = authorProfile?.author_bio || 'Contributing writer at TheBulletinBriefs, covering news and current events.';
+  const displayName = 'TheBulletinBriefs';
+  const jobTitle = 'Journalist';
+  const bio = 'Contributing writer at TheBulletinBriefs, covering news and current events.';
   const avatarUrl = authorProfile?.author_image_url || authorProfile?.avatar_url;
 
   return (
