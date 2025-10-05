@@ -32,7 +32,6 @@ import AdminNewArticle from "./pages/AdminNewArticle";
 import AdminEditArticle from "./pages/AdminEditArticle";
 import AdminEngagement from "./pages/AdminEngagement";
 import AdminSettings from "./pages/AdminSettings";
-import AMPArticlePage from "./pages/AMPArticlePage";
 import NewsletterPreferencesPage from "./pages/NewsletterPreferences";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
@@ -77,7 +76,6 @@ const App = () => {
                     <Route path="/subscription-canceled" element={<SubscriptionCanceled />} />
                     <Route path="/editorial-guidelines" element={<EditorialGuidelines />} />
                     <Route path="/newsletter-preferences" element={<NewsletterPreferencesPage />} />
-                    <Route path="/amp/article/:slug" element={<AMPArticlePage />} />
                     <Route path="/privacy" element={<PrivacyPolicy />} />
                     <Route path="/terms" element={<TermsOfService />} />
                     <Route path="/cookies" element={<CookiePolicy />} />

@@ -134,7 +134,6 @@ export default function ArticlePage() {
         author={article.author}
         tags={seoKeywords}
         content={article.content}
-        ampUrl={`${window.location.origin}/amp/article/${article.slug}`}
         structuredData={generateArticleStructuredData({
           title: article.title,
           description: article.excerpt || "",
