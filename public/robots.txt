@@ -2,11 +2,11 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://thebulletinbriefs.in/sitemap.xml
-Sitemap: https://thebulletinbriefs.in/news-sitemap.xml
+Sitemap: https://www.thebulletinbriefs.in/sitemap.xml
+Sitemap: https://www.thebulletinbriefs.in/news-sitemap.xml
 
 # RSS Feed
-Sitemap: https://thebulletinbriefs.in/rss
+Sitemap: https://www.thebulletinbriefs.in/rss
 
 # Block admin areas
 Disallow: /admin/

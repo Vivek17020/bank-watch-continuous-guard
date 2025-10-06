@@ -76,7 +76,7 @@ serve(async (req) => {
 });
 
 function generateSitemap(articles: Article[], categories: Category[]) {
-  const baseUrl = "https://thebulletinbriefs.in";
+  const baseUrl = "https://www.thebulletinbriefs.in";
   const today = new Date().toISOString().split("T")[0];
 
   let urls = `

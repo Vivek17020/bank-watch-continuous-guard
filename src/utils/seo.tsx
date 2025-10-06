@@ -72,6 +72,28 @@ export function generateMetaDescription(excerpt?: string, content?: string): str
   return "Stay informed with the latest breaking news and in-depth analysis from TheBulletinBriefs.";
 }
 
+// Normalize canonical URL to always use www and strip query params
+function normalizeCanonicalUrl(url?: string): string {
+  if (!url) {
+    // Default to current page with www
+    const cleanPath = window.location.pathname;
+    return `https://www.thebulletinbriefs.in${cleanPath}`;
+  }
+  
+  try {
+    // Parse URL and strip query parameters
+    const urlObj = new URL(url);
+    const cleanPath = urlObj.pathname;
+    
+    // Always use www subdomain
+    return `https://www.thebulletinbriefs.in${cleanPath}`;
+  } catch {
+    // Fallback if URL parsing fails
+    const cleanPath = url.split('?')[0].split('#')[0];
+    return cleanPath.startsWith('http') ? cleanPath : `https://www.thebulletinbriefs.in${cleanPath}`;
+  }
+}
+
 export function SEOHead({
   title,
   description,
@@ -88,6 +110,9 @@ export function SEOHead({
   const siteTitle = "TheBulletinBriefs";
   const fullTitle = title === siteTitle ? title : `${title} | ${siteTitle}`;
   
+  // Normalize canonical URL
+  const canonicalUrl = normalizeCanonicalUrl(url);
+  
   // Auto-generate keywords and description if needed
   const autoKeywords = generateSEOKeywords(title, content, tags);
   const autoDescription = description || generateMetaDescription(undefined, content);
@@ -98,7 +123,7 @@ export function SEOHead({
       <title>{fullTitle}</title>
       <meta name="description" content={autoDescription} />
       <meta name="keywords" content={autoKeywords.join(", ")} />
-      <link rel="canonical" href={url} />
+      <link rel="canonical" href={canonicalUrl} />
       
       {/* Google Discover optimization */}
       <meta name="robots" content="max-image-preview:large, max-snippet:-1, max-video-preview:-1, index, follow" />
@@ -116,7 +141,7 @@ export function SEOHead({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={autoDescription} />
       <meta property="og:type" content={type} />
-      <meta property="og:url" content={url} />
+      <meta property="og:url" content={canonicalUrl} />
       <meta property="og:site_name" content={siteTitle} />
       <meta property="og:locale" content="en_US" />
       {image && <meta property="og:image" content={image} />}
@@ -159,7 +184,7 @@ export function SEOHead({
       {type === "article" && (
         <>
           <meta name="news_keywords" content={autoKeywords.slice(0, 10).join(", ")} />
-          <meta name="original-source" content={url} />
+          <meta name="original-source" content={canonicalUrl} />
           {publishedTime && <meta name="DC.date.issued" content={publishedTime} />}
         </>
       )}

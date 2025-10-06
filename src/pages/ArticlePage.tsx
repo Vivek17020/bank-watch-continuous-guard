@@ -110,7 +110,8 @@ export default function ArticlePage() {
   }
 
   const publishedDate = article.published_at ? new Date(article.published_at) : new Date(article.created_at);
-  const currentUrl = `${window.location.origin}${window.location.pathname}`;
+  // Canonical URL always uses www and no query params
+  const canonicalUrl = `https://www.thebulletinbriefs.in/article/${article.slug}`;
   
   // Auto-generate SEO keywords from article content
   const seoKeywords = generateSEOKeywords(article.title, article.content, article.tags);
@@ -128,7 +129,7 @@ export default function ArticlePage() {
         title={article.meta_title || article.title}
         description={article.meta_description || article.excerpt || ""}
         image={article.image_url || undefined}
-        url={currentUrl}
+        url={canonicalUrl}
         type="article"
         publishedTime={article.published_at || article.created_at}
         modifiedTime={article.updated_at}
@@ -142,7 +143,7 @@ export default function ArticlePage() {
           publishedTime: article.published_at || article.created_at,
           modifiedTime: article.updated_at,
           image: article.image_url || undefined,
-          url: currentUrl,
+          url: canonicalUrl,
           keywords: seoKeywords,
         })}
       />
@@ -225,7 +226,7 @@ export default function ArticlePage() {
                 </div>
                 
                 <ShareButtons 
-                  url={currentUrl}
+                  url={canonicalUrl}
                   title={article.title}
                   description={article.excerpt || ""}
                   articleId={article.id}
@@ -278,7 +279,7 @@ export default function ArticlePage() {
                   <h3 className="text-lg font-semibold">Share this article</h3>
                 </div>
                 <ShareButtons 
-                  url={currentUrl}
+                  url={canonicalUrl}
                   title={article.title}
                   description={article.excerpt || ""}
                   articleId={article.id}

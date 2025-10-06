@@ -36,7 +36,7 @@ export default async function handler(req, res) {
     }
 
     // Generate sitemap XML
-    const baseUrl = 'https://thebulletinbriefs.in';
+    const baseUrl = 'https://www.thebulletinbriefs.in';
     const today = new Date().toISOString().split('T')[0];
 
     // Static pages

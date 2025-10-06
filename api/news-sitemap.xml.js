@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     }
 
     // Generate Google News sitemap XML
-    const baseUrl = 'https://thebulletinbriefs.in';
+    const baseUrl = 'https://www.thebulletinbriefs.in';
     
     const urlEntries = (articles || []).map(article => {
       const publishDate = article.published_at ? new Date(article.published_at) : new Date(article.created_at);
