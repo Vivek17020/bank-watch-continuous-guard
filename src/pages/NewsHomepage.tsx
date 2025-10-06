@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/public/navbar";
 import { CategoryFilter } from "@/components/public/category-filter";
 import { ArticleGrid } from "@/components/public/article-grid";
 import { PersonalizedFeed } from "@/components/public/personalized-feed";
-import { Footer } from '@/components/public/footer';
-import { NewsletterSignup } from '@/components/public/newsletter-signup';
+const Footer = lazy(() => import('@/components/public/footer').then(module => ({ default: module.Footer })));
 import { PushNotificationButton } from '@/components/public/push-notification-button';
 import { SearchDialog } from '@/components/public/search-dialog';
 import { TrendingArticles } from '@/components/public/trending-articles';
@@ -235,8 +234,10 @@ export default function NewsHomepage() {
           </div>
         </main>
 
-        {/* Footer */}
-        <Footer />
+        {/* Footer - Lazy loaded for better performance */}
+        <Suspense fallback={<div className="h-96 bg-card border-t" />}>
+          <Footer />
+        </Suspense>
 
         {/* PWA Components */}
         <PWAInstaller />
