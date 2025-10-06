@@ -53,6 +53,20 @@
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" sizes="180x180" href="/tb-briefs-favicon.png">
+    
+    <!-- Google Reader Revenue Manager (Beta) -->
+    <script async type="application/javascript"
+            src="https://news.google.com/swg/js/v1/swg-basic.js"></script>
+    <script>
+      (self.SWG_BASIC = self.SWG_BASIC || []).push(basicSubscriptions => {
+        basicSubscriptions.init({
+          type: 'NewsArticle',
+          isPartOfType: ['Product'],
+          isPartOfProductId: 'CAowgNjBDA:openaccess',
+          clientOptions: { theme: 'light', lang: 'en' },
+        });
+      });
+    </script>
   </head>
 
   <body>
