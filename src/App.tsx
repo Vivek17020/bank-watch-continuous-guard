@@ -2,7 +2,7 @@ import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -39,19 +39,11 @@ import CookiePolicy from "./pages/CookiePolicy";
 import Disclaimer from "./pages/Disclaimer";
 import WebsiteAudit from "./pages/WebsiteAudit";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 60 * 1000,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
 
 const App = () => {
   return (
     <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
+      
         <ThemeProvider>
           <AuthProvider>
             <TooltipProvider>
@@ -102,7 +94,7 @@ const App = () => {
             </TooltipProvider>
           </AuthProvider>
         </ThemeProvider>
-      </QueryClientProvider>
+      
     </HelmetProvider>
   );
 };
