@@ -16,6 +16,7 @@ import { sanitizeHtml } from "@/lib/sanitize";
 import { Calendar, Clock, Eye, User, ArrowLeft } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getFirstName } from "@/lib/utils";
 
 export default function ArticlePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -199,7 +200,7 @@ export default function ArticlePage() {
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <User className="h-4 w-4" />
-                    <span>By TheBulletinBriefs</span>
+                    <span>By {getFirstName(article.author)}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
@@ -220,7 +221,7 @@ export default function ArticlePage() {
                     <Eye className="h-4 w-4" />
                     <span>{article.views_count} views</span>
                   </div>
-                  <span className="font-medium">TheBulletinBriefs</span>
+                  <span className="font-medium">{getFirstName(article.author)}</span>
                 </div>
                 
                 <ShareButtons 

@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Article } from "@/hooks/use-articles";
 import { Calendar, Clock, Eye } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { getFirstName } from "@/lib/utils";
 
 interface ArticleCardProps {
   article: Article;
@@ -79,7 +80,7 @@ export function ArticleCard({ article, featured = false, compact = false }: Arti
                   <span>{article.views_count}</span>
                 </div>
               </div>
-              <span className="font-medium">{article.author}</span>
+              <span className="font-medium">{getFirstName(article.author)}</span>
             </div>
           </CardContent>
         </Card>
@@ -151,7 +152,7 @@ export function ArticleCard({ article, featured = false, compact = false }: Arti
                 <span>{article.views_count}</span>
               </div>
             </div>
-            <span>{article.author}</span>
+            <span>{getFirstName(article.author)}</span>
           </div>
         </CardContent>
       </Card>

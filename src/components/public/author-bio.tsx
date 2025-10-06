@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User } from 'lucide-react';
+import { getFirstName } from '@/lib/utils';
 
 interface AuthorBioProps {
   authorId?: string;
@@ -24,7 +25,7 @@ export function AuthorBio({ authorId, authorName }: AuthorBioProps) {
     enabled: !!authorId,
   });
 
-  const displayName = 'TheBulletinBriefs';
+  const displayName = getFirstName(authorName);
   const jobTitle = 'Journalist';
   const bio = 'Contributing writer at TheBulletinBriefs, covering news and current events.';
   const avatarUrl = authorProfile?.author_image_url || authorProfile?.avatar_url;
