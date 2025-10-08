@@ -39,6 +39,8 @@ import CookiePolicy from "./pages/CookiePolicy";
 import Disclaimer from "./pages/Disclaimer";
 import WebsiteAudit from "./pages/WebsiteAudit";
 import AuditReport from "./pages/AuditReport";
+import SEOAudit from "./pages/SEOAudit";
+import GoogleNewsAudit from "./pages/GoogleNewsAudit";
 
 
 const App = () => {
@@ -74,6 +76,8 @@ const App = () => {
                     <Route path="/cookies" element={<CookiePolicy />} />
                     <Route path="/disclaimer" element={<Disclaimer />} />
                     <Route path="/audit" element={<WebsiteAudit />} />
+                    <Route path="/seo-audit" element={<SEOAudit />} />
+                    <Route path="/google-news-audit" element={<GoogleNewsAudit />} />
                     <Route path="/auth" element={<Auth />} />
                     
                     {/* Admin Routes */}
