@@ -140,7 +140,6 @@ export default function ArticlePage() {
           title: article.title,
           description: article.excerpt || "",
           author: article.author,
-          authorUsername: article.profiles?.username,
           publishedTime: article.published_at || article.created_at,
           modifiedTime: article.updated_at,
           image: article.image_url || undefined,
@@ -202,7 +201,7 @@ export default function ArticlePage() {
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <User className="h-4 w-4" />
-                    <span>By {article.profiles?.username || getFirstName(article.author)}</span>
+                    <span>By {getFirstName(article.author)}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
@@ -223,6 +222,7 @@ export default function ArticlePage() {
                     <Eye className="h-4 w-4" />
                     <span>{article.views_count} views</span>
                   </div>
+                  <span className="font-medium">{getFirstName(article.author)}</span>
                 </div>
                 
                 <ShareButtons 
@@ -290,8 +290,7 @@ export default function ArticlePage() {
             {/* Author Bio */}
             <AuthorBio 
               authorId={article.author_id || undefined} 
-              authorName={article.author}
-              authorUsername={article.profiles?.username}
+              authorName={article.author} 
             />
 
             {/* Comments Section */}

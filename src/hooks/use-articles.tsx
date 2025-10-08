@@ -33,10 +33,6 @@ export interface Article {
     color: string;
     description: string | null;
   };
-  profiles?: {
-    username: string;
-    full_name: string | null;
-  };
 }
 
 export const useArticles = (categorySlug?: string, page = 1, limit = 12) => {
@@ -53,10 +49,6 @@ export const useArticles = (categorySlug?: string, page = 1, limit = 12) => {
             slug,
             color,
             description
-          ),
-          profiles:author_id (
-            username,
-            full_name
           )
         `)
         .eq("published", true)
@@ -97,10 +89,6 @@ export const useArticle = (slug: string) => {
             slug,
             color,
             description
-          ),
-          profiles:author_id (
-            username,
-            full_name
           )
         `)
         .eq("slug", slug)
@@ -134,17 +122,11 @@ export const useRelatedArticles = (articleId: string, categoryId: string, tags: 
           image_url,
           published_at,
           reading_time,
-          author,
-          author_id,
           categories:category_id (
             id,
             name,
             slug,
             color
-          ),
-          profiles:author_id (
-            username,
-            full_name
           )
         `)
         .eq("published", true)
@@ -189,10 +171,6 @@ export const useInfiniteArticles = (categorySlug?: string) => {
             slug,
             color,
             description
-          ),
-          profiles:author_id (
-            username,
-            full_name
           )
         `)
         .eq("published", true)

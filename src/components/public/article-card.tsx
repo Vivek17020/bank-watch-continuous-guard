@@ -65,19 +65,22 @@ export function ArticleCard({ article, featured = false, compact = false }: Arti
                 {article.excerpt}
               </p>
             )}
-            <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-auto">
-              <div className="flex items-center space-x-1">
-                <Calendar className="h-3 w-3" />
-                <span>{formatDistanceToNow(publishedDate, { addSuffix: true })}</span>
+            <div className="flex items-center justify-between text-sm text-muted-foreground mt-auto">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-1">
+                  <Calendar className="h-3 w-3" />
+                  <span>{formatDistanceToNow(publishedDate, { addSuffix: true })}</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <Clock className="h-3 w-3" />
+                  <span>{article.reading_time} min read</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <Eye className="h-3 w-3" />
+                  <span>{article.views_count}</span>
+                </div>
               </div>
-              <div className="flex items-center space-x-1">
-                <Clock className="h-3 w-3" />
-                <span>{article.reading_time} min read</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Eye className="h-3 w-3" />
-                <span>{article.views_count}</span>
-              </div>
+              <span className="font-medium">{getFirstName(article.author)}</span>
             </div>
           </CardContent>
         </Card>
@@ -138,15 +141,18 @@ export function ArticleCard({ article, featured = false, compact = false }: Arti
               {article.excerpt}
             </p>
           )}
-          <div className="flex items-center space-x-3 text-xs text-muted-foreground mt-auto">
-            <div className="flex items-center space-x-1">
-              <Clock className="h-3 w-3" />
-              <span>{article.reading_time}m</span>
+          <div className="flex items-center justify-between text-xs text-muted-foreground mt-auto">
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-1">
+                <Clock className="h-3 w-3" />
+                <span>{article.reading_time}m</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Eye className="h-3 w-3" />
+                <span>{article.views_count}</span>
+              </div>
             </div>
-            <div className="flex items-center space-x-1">
-              <Eye className="h-3 w-3" />
-              <span>{article.views_count}</span>
-            </div>
+            <span>{getFirstName(article.author)}</span>
           </div>
         </CardContent>
       </Card>
