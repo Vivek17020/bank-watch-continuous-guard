@@ -38,7 +38,7 @@ import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
 import Disclaimer from "./pages/Disclaimer";
 import WebsiteAudit from "./pages/WebsiteAudit";
-import SEOAudit from "./pages/SEOAudit";
+import AuditReport from "./pages/AuditReport";
 
 
 const App = () => {
@@ -74,7 +74,6 @@ const App = () => {
                     <Route path="/cookies" element={<CookiePolicy />} />
                     <Route path="/disclaimer" element={<Disclaimer />} />
                     <Route path="/audit" element={<WebsiteAudit />} />
-                    <Route path="/seo-audit" element={<SEOAudit />} />
                     <Route path="/auth" element={<Auth />} />
                     
                     {/* Admin Routes */}
@@ -85,6 +84,7 @@ const App = () => {
                       <Route path="articles/new" element={<AdminNewArticle />} />
                       <Route path="articles/:id/edit" element={<AdminEditArticle />} />
                       <Route path="engagement" element={<AdminEngagement />} />
+                      <Route path="audit-report" element={<AuditReport />} />
                       <Route path="settings" element={<AdminSettings />} />
                     </Route>
                     

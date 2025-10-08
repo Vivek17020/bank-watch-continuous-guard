@@ -615,7 +615,7 @@ export type Database = {
           job_title: string | null
           role: string | null
           updated_at: string
-          username: string | null
+          username: string
         }
         Insert: {
           author_bio?: string | null
@@ -629,7 +629,7 @@ export type Database = {
           job_title?: string | null
           role?: string | null
           updated_at?: string
-          username?: string | null
+          username: string
         }
         Update: {
           author_bio?: string | null
@@ -643,7 +643,7 @@ export type Database = {
           job_title?: string | null
           role?: string | null
           updated_at?: string
-          username?: string | null
+          username?: string
         }
         Relationships: []
       }
@@ -905,6 +905,10 @@ export type Database = {
       can_manage_push_notifications: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      generate_unique_username: {
+        Args: { user_full_name: string; user_id: string }
+        Returns: string
       }
       get_article_engagement: {
         Args: { article_uuid: string }

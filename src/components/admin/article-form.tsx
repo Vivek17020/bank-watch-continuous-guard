@@ -13,7 +13,7 @@ import { AIAssistantPanel } from './ai-assistant-panel';
 import { ArticlePremiumControls } from './article-premium-controls';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { Upload, Eye, Save, Send, X, Clock, CheckCircle } from 'lucide-react';
+import { Upload, Eye, Save, Send, X, Clock, CheckCircle, Youtube } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import slugify from 'slugify';
 import { z } from 'zod';
@@ -558,6 +558,9 @@ export function ArticleForm({ article, onSave }: ArticleFormProps) {
           <Card>
             <CardHeader>
               <CardTitle>Content</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                Use the rich text editor below. Click the <Youtube className="inline h-3 w-3" /> video button in the toolbar to embed YouTube videos.
+              </p>
             </CardHeader>
             <CardContent>
               <RichTextEditor
@@ -565,6 +568,33 @@ export function ArticleForm({ article, onSave }: ArticleFormProps) {
                 onChange={(content) => updateFormData({ content })}
                 placeholder="Start writing your article..."
               />
+            </CardContent>
+          </Card>
+
+          {/* E-E-A-T Guidelines */}
+          <Card className="border-primary/20 bg-primary/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-primary" />
+                E-E-A-T Guidelines for Quality Content
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div>
+                <strong className="text-primary">Experience:</strong> Share personal insights and first-hand knowledge in your writing.
+              </div>
+              <div>
+                <strong className="text-primary">Expertise:</strong> Demonstrate subject matter knowledge with accurate, well-researched content.
+              </div>
+              <div>
+                <strong className="text-primary">Authoritativeness:</strong> Cite credible sources and link to authoritative references.
+              </div>
+              <div>
+                <strong className="text-primary">Trustworthiness:</strong> Be transparent, fact-check thoroughly, and maintain editorial integrity.
+              </div>
+              <div className="pt-2 border-t">
+                <strong>Tips:</strong> Use the video embed feature to add multimedia content. Include your unique author perspective. Update your profile with credentials.
+              </div>
             </CardContent>
           </Card>
 
