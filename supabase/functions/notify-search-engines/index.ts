@@ -6,6 +6,70 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const MAX_RETRIES = 3;
+const BASE_DELAY = 1000; // 1 second
+
+// Helper function to retry with exponential backoff
+async function retryWithBackoff(
+  fn: () => Promise<Response>,
+  serviceName: string,
+  maxRetries = MAX_RETRIES
+): Promise<{ success: boolean; retries: number; error?: string }> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fn();
+      if (response.ok || response.status === 200) {
+        console.log(`${serviceName} ping successful on attempt ${attempt + 1}`);
+        return { success: true, retries: attempt };
+      }
+      lastError = new Error(`HTTP ${response.status}`);
+    } catch (err) {
+      lastError = err as Error;
+      console.error(`${serviceName} ping failed (attempt ${attempt + 1}):`, err);
+    }
+    
+    if (attempt < maxRetries) {
+      const delay = BASE_DELAY * Math.pow(2, attempt);
+      console.log(`Retrying ${serviceName} in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  return { 
+    success: false, 
+    retries: maxRetries, 
+    error: lastError?.message || 'Unknown error' 
+  };
+}
+
+// Helper function to log to database
+async function logPing(
+  supabaseClient: any,
+  articleId: string,
+  serviceName: string,
+  actionType: string,
+  status: 'success' | 'failed',
+  retryCount: number,
+  errorMessage?: string
+) {
+  try {
+    await supabaseClient
+      .from('seo_automation_logs')
+      .insert({
+        article_id: articleId,
+        action_type: actionType,
+        service_name: serviceName,
+        status,
+        retry_count: retryCount,
+        error_message: errorMessage || null,
+      });
+  } catch (err) {
+    console.error('Failed to log ping:', err);
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -35,42 +99,122 @@ serve(async (req) => {
     const baseUrl = "https://thebulletinbriefs.in";
     const articleUrl = `${baseUrl}/article/${article.slug}`;
     const sitemapUrl = `${baseUrl}/sitemap.xml`;
+    const newsSitemapUrl = `${baseUrl}/news-sitemap.xml`;
 
-    // 1. Ping Google's sitemap service
-    try {
-      await fetch(`https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`);
-      console.log('Google sitemap ping sent');
-    } catch (err) {
-      console.error('Google ping failed:', err);
-    }
+    // Run all pings in background (don't block response)
+    const backgroundTask = async () => {
+      const results = {
+        google: false,
+        googleNews: false,
+        bing: false,
+        yandex: false,
+        indexnow: false,
+      };
 
-    // 2. Submit to IndexNow (Bing, Yandex, etc.)
-    try {
-      await fetch('https://api.indexnow.org/indexnow', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          host: 'thebulletinbriefs.in',
-          key: 'e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0',
-          keyLocation: `${baseUrl}/e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0.txt`,
-          urlList: [articleUrl]
-        })
-      });
-      console.log('IndexNow submission sent');
-    } catch (err) {
-      console.error('IndexNow submission failed:', err);
-    }
+      // 1. Ping Google's main sitemap
+      const googleResult = await retryWithBackoff(
+        () => fetch(`https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`),
+        'Google Sitemap'
+      );
+      results.google = googleResult.success;
+      await logPing(
+        supabaseClient,
+        articleId,
+        'google',
+        'sitemap_ping',
+        googleResult.success ? 'success' : 'failed',
+        googleResult.retries,
+        googleResult.error
+      );
 
-    // 3. Ping Bing directly
-    try {
-      await fetch(`https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`);
-      console.log('Bing sitemap ping sent');
-    } catch (err) {
-      console.error('Bing ping failed:', err);
-    }
+      // 2. Ping Google News sitemap
+      const googleNewsResult = await retryWithBackoff(
+        () => fetch(`https://www.google.com/ping?sitemap=${encodeURIComponent(newsSitemapUrl)}`),
+        'Google News Sitemap'
+      );
+      results.googleNews = googleNewsResult.success;
+      await logPing(
+        supabaseClient,
+        articleId,
+        'google',
+        'news_sitemap_ping',
+        googleNewsResult.success ? 'success' : 'failed',
+        googleNewsResult.retries,
+        googleNewsResult.error
+      );
 
+      // 3. Submit to IndexNow (Bing, Yandex, etc.)
+      const indexnowResult = await retryWithBackoff(
+        () => fetch('https://api.indexnow.org/indexnow', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            host: 'thebulletinbriefs.in',
+            key: 'e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0',
+            keyLocation: `${baseUrl}/e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0.txt`,
+            urlList: [articleUrl]
+          })
+        }),
+        'IndexNow'
+      );
+      results.indexnow = indexnowResult.success;
+      await logPing(
+        supabaseClient,
+        articleId,
+        'indexnow',
+        'url_submit',
+        indexnowResult.success ? 'success' : 'failed',
+        indexnowResult.retries,
+        indexnowResult.error
+      );
+
+      // 4. Ping Bing directly
+      const bingResult = await retryWithBackoff(
+        () => fetch(`https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`),
+        'Bing'
+      );
+      results.bing = bingResult.success;
+      await logPing(
+        supabaseClient,
+        articleId,
+        'bing',
+        'sitemap_ping',
+        bingResult.success ? 'success' : 'failed',
+        bingResult.retries,
+        bingResult.error
+      );
+
+      // 5. Ping Yandex
+      const yandexResult = await retryWithBackoff(
+        () => fetch(`https://yandex.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`),
+        'Yandex'
+      );
+      results.yandex = yandexResult.success;
+      await logPing(
+        supabaseClient,
+        articleId,
+        'yandex',
+        'sitemap_ping',
+        yandexResult.success ? 'success' : 'failed',
+        yandexResult.retries,
+        yandexResult.error
+      );
+
+      console.log('All pings completed:', results);
+    };
+
+    // Start background task (non-blocking)
+    backgroundTask().catch(err => {
+      console.error('Background task error:', err);
+    });
+
+    // Return immediate response
     return new Response(
-      JSON.stringify({ success: true, message: 'Search engines notified' }),
+      JSON.stringify({ 
+        success: true, 
+        message: 'Search engine notifications started',
+        articleUrl 
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 

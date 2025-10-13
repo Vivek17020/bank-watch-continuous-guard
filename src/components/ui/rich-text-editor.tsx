@@ -49,7 +49,7 @@ import {
   Subscript as SubscriptIcon,
   Superscript as SuperscriptIcon,
 } from 'lucide-react';
-import { useCallback, useState, useRef } from 'react';
+import { useCallback, useState, useRef, useEffect } from 'react';
 
 interface RichTextEditorProps {
   content: string;
@@ -82,7 +82,9 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-primary underline cursor-pointer hover:text-primary-glow transition-colors',
+          class: 'text-blue-600 dark:text-blue-400 underline cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors',
+          rel: 'noopener noreferrer nofollow',
+          target: '_blank',
         },
       }),
       Image.configure({
@@ -107,6 +109,9 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
       Youtube.configure({
         width: 640,
         height: 480,
+        HTMLAttributes: {
+          class: 'my-6 mx-auto rounded-lg overflow-hidden shadow-lg',
+        },
       }),
     ],
     content,
@@ -121,6 +126,14 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
       },
     },
   });
+
+  // Sync external content updates (e.g., AI actions) into TipTap editor
+  useEffect(() => {
+    if (!editor) return;
+    if (content && content !== htmlContent) {
+      editor.commands.setContent(content, { emitUpdate: false });
+    }
+  }, [content, editor, htmlContent]);
 
   const uploadImage = useCallback(async (file: File) => {
     try {
@@ -179,9 +192,21 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
   }, [editor]);
 
   const addYouTubeVideo = useCallback(() => {
-    const url = window.prompt('YouTube URL');
+    const url = window.prompt('Enter YouTube URL (e.g., https://www.youtube.com/watch?v=VIDEO_ID)');
     if (url) {
-      editor?.commands.setYoutubeVideo({ src: url });
+      try {
+        editor?.commands.setYoutubeVideo({ src: url, width: 640, height: 480 });
+        toast({
+          title: "Video Added",
+          description: "YouTube video has been embedded successfully",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Invalid YouTube URL. Please use a valid YouTube video link.",
+          variant: "destructive",
+        });
+      }
     }
   }, [editor]);
 
@@ -409,7 +434,8 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
               <ImageIcon className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="sm" onClick={addYouTubeVideo}>
-              <YoutubeIcon className="h-4 w-4" />
+            <YoutubeIcon className="h-4 w-4 mr-2" />
+            Embed Video
             </Button>
 
             <Separator orientation="vertical" className="h-6" />

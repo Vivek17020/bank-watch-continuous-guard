@@ -58,10 +58,14 @@ export function useLikes(articleId: string) {
 
   const getClientIP = async () => {
     try {
-      const response = await fetch('https://api.ipify.org?format=json');
+      const response = await fetch('https://api.ipify.org?format=json', {
+        signal: AbortSignal.timeout(3000), // 3 second timeout
+      });
+      if (!response.ok) throw new Error('Failed to fetch IP');
       const data = await response.json();
       return data.ip;
-    } catch {
+    } catch (error) {
+      console.warn('Could not fetch client IP, using fallback:', error);
       return 'unknown';
     }
   };

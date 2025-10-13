@@ -118,6 +118,8 @@ export const OptimizedImage = memo(function OptimizedImage({
           srcSet={srcSet}
           sizes={sizes}
           alt={alt}
+          width="1200"
+          height="675"
           className={cn(
             "w-full h-full object-cover transition-opacity duration-300",
             isLoaded ? "opacity-100" : "opacity-0"
@@ -129,7 +131,7 @@ export const OptimizedImage = memo(function OptimizedImage({
           onError={handleError}
           style={{
             contentVisibility: 'auto',
-            containIntrinsicSize: '400px 225px'
+            containIntrinsicSize: '1200px 675px'
           }}
           {...props}
         />

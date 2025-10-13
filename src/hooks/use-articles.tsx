@@ -33,6 +33,14 @@ export interface Article {
     color: string;
     description: string | null;
   };
+  public_profiles?: {
+    username: string;
+    full_name: string | null;
+  };
+  profiles?: {
+    username: string;
+    full_name: string | null;
+  };
 }
 
 export const useArticles = (categorySlug?: string, page = 1, limit = 12) => {
@@ -55,7 +63,7 @@ export const useArticles = (categorySlug?: string, page = 1, limit = 12) => {
         .order("published_at", { ascending: false });
 
       if (categorySlug) {
-        query = query.eq("categories.slug", categorySlug);
+        query = query.eq("category_id", (await supabase.from("categories").select("id").eq("slug", categorySlug).maybeSingle()).data?.id || "");
       }
 
       const from = (page - 1) * limit;
@@ -65,8 +73,30 @@ export const useArticles = (categorySlug?: string, page = 1, limit = 12) => {
 
       if (error) throw error;
       
+      // Enrich with public author profiles without touching restricted profiles table
+      const authorIds = Array.from(new Set((data || []).map((a: any) => a.author_id).filter(Boolean)));
+      let authorsMap = new Map<string, { username: string; full_name: string | null }>();
+      if (authorIds.length > 0) {
+        const { data: authors } = await supabase
+          .from("public_profiles")
+          .select("id, username, full_name")
+          .in("id", authorIds as string[]);
+        (authors || []).forEach((p: any) => {
+          authorsMap.set(p.id, { username: p.username, full_name: p.full_name });
+        });
+      }
+
+      const articles = (data || []).map((a: any) => {
+        const author = a.author_id ? authorsMap.get(a.author_id) : undefined;
+        return {
+          ...a,
+          public_profiles: author,
+          profiles: author, // for backward compatibility
+        };
+      });
+
       return {
-        articles: data as Article[],
+        articles: articles as Article[],
         totalCount: count || 0,
         totalPages: Math.ceil((count || 0) / limit),
         currentPage: page
@@ -97,13 +127,32 @@ export const useArticle = (slug: string) => {
 
       if (error) throw error;
 
-      // Increment view count
+      // Fetch author public profile
+      let authorProfile: { username: string; full_name: string | null } | undefined = undefined;
+      if (data.author_id) {
+        const { data: author } = await supabase
+          .from("public_profiles")
+          .select("id, username, full_name")
+          .eq("id", data.author_id)
+          .maybeSingle();
+        if (author) {
+          authorProfile = { username: author.username, full_name: author.full_name };
+        }
+      }
+
+      // Increment view count (best-effort)
       await supabase
         .from("articles")
         .update({ views_count: (data.views_count || 0) + 1 })
         .eq("id", data.id);
 
-      return data as Article;
+      const article = {
+        ...data,
+        public_profiles: authorProfile,
+        profiles: authorProfile, // backward compatibility
+      } as Article;
+
+      return article;
     },
   });
 };
@@ -122,6 +171,8 @@ export const useRelatedArticles = (articleId: string, categoryId: string, tags: 
           image_url,
           published_at,
           reading_time,
+          author,
+          author_id,
           categories:category_id (
             id,
             name,
@@ -136,7 +187,25 @@ export const useRelatedArticles = (articleId: string, categoryId: string, tags: 
         .limit(3);
 
       if (error) throw error;
-      return data as Article[];
+      const authorIds = Array.from(new Set((data || []).map((a: any) => a.author_id).filter(Boolean)));
+      let authorsMap = new Map<string, { username: string; full_name: string | null }>();
+      if (authorIds.length > 0) {
+        const { data: authors } = await supabase
+          .from("public_profiles")
+          .select("id, username, full_name")
+          .in("id", authorIds as string[]);
+        (authors || []).forEach((p: any) => {
+          authorsMap.set(p.id, { username: p.username, full_name: p.full_name });
+        });
+      }
+
+      const enriched = (data || []).map((a: any) => ({
+        ...a,
+        public_profiles: a.author_id ? authorsMap.get(a.author_id) : undefined,
+        profiles: a.author_id ? authorsMap.get(a.author_id) : undefined,
+      }));
+
+      return enriched as Article[];
     },
   });
 };
@@ -193,7 +262,25 @@ export const useInfiniteArticles = (categorySlug?: string) => {
 
       if (error) throw error;
       
-      return data as Article[];
+      const authorIds = Array.from(new Set((data || []).map((a: any) => a.author_id).filter(Boolean)));
+      let authorsMap = new Map<string, { username: string; full_name: string | null }>();
+      if (authorIds.length > 0) {
+        const { data: authors } = await supabase
+          .from("public_profiles")
+          .select("id, username, full_name")
+          .in("id", authorIds as string[]);
+        (authors || []).forEach((p: any) => {
+          authorsMap.set(p.id, { username: p.username, full_name: p.full_name });
+        });
+      }
+
+      const enriched = (data || []).map((a: any) => ({
+        ...a,
+        public_profiles: a.author_id ? authorsMap.get(a.author_id) : undefined,
+        profiles: a.author_id ? authorsMap.get(a.author_id) : undefined,
+      }));
+
+      return enriched as Article[];
     },
   });
 };

@@ -602,6 +602,51 @@ export type Database = {
         }
         Relationships: []
       }
+      photo_stories: {
+        Row: {
+          alt_text: string
+          author_id: string | null
+          caption: string | null
+          created_at: string
+          id: string
+          media_url: string
+          publish_at: string | null
+          slug: string
+          status: string
+          theme: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          alt_text: string
+          author_id?: string | null
+          caption?: string | null
+          created_at?: string
+          id?: string
+          media_url: string
+          publish_at?: string | null
+          slug: string
+          status?: string
+          theme?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          alt_text?: string
+          author_id?: string | null
+          caption?: string | null
+          created_at?: string
+          id?: string
+          media_url?: string
+          publish_at?: string | null
+          slug?: string
+          status?: string
+          theme?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           author_bio: string | null
@@ -615,7 +660,7 @@ export type Database = {
           job_title: string | null
           role: string | null
           updated_at: string
-          username: string | null
+          username: string
         }
         Insert: {
           author_bio?: string | null
@@ -629,7 +674,7 @@ export type Database = {
           job_title?: string | null
           role?: string | null
           updated_at?: string
-          username?: string | null
+          username: string
         }
         Update: {
           author_bio?: string | null
@@ -643,7 +688,7 @@ export type Database = {
           job_title?: string | null
           role?: string | null
           updated_at?: string
-          username?: string | null
+          username?: string
         }
         Relationships: []
       }
@@ -703,6 +748,47 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      seo_automation_logs: {
+        Row: {
+          action_type: string
+          article_id: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          retry_count: number | null
+          service_name: string
+          status: string
+        }
+        Insert: {
+          action_type: string
+          article_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          retry_count?: number | null
+          service_name: string
+          status: string
+        }
+        Update: {
+          action_type?: string
+          article_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          retry_count?: number | null
+          service_name?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_automation_logs_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_analytics: {
         Row: {
@@ -852,6 +938,95 @@ export type Database = {
         }
         Relationships: []
       }
+      visual_stories: {
+        Row: {
+          author_id: string | null
+          cover_image_url: string
+          created_at: string
+          excerpt: string | null
+          id: string
+          publish_at: string | null
+          slug: string
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          cover_image_url: string
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          publish_at?: string | null
+          slug: string
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          cover_image_url?: string
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          publish_at?: string | null
+          slug?: string
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      visual_story_slides: {
+        Row: {
+          alt_text: string
+          animation: string | null
+          caption: string | null
+          created_at: string
+          duration_seconds: number | null
+          id: string
+          media_url: string
+          position: number
+          story_id: string
+          type: string
+        }
+        Insert: {
+          alt_text: string
+          animation?: string | null
+          caption?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          media_url: string
+          position: number
+          story_id: string
+          type?: string
+        }
+        Update: {
+          alt_text?: string
+          animation?: string | null
+          caption?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          media_url?: string
+          position?: number
+          story_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visual_story_slides_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "visual_stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       public_profiles: {
@@ -905,6 +1080,10 @@ export type Database = {
       can_manage_push_notifications: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      generate_unique_username: {
+        Args: { user_full_name: string; user_id: string }
+        Returns: string
       }
       get_article_engagement: {
         Args: { article_uuid: string }

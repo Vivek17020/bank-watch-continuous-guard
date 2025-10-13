@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.0';
-import { Resend } from "npm:resend@2.0.0";
+import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -149,7 +149,8 @@ serve(async (req) => {
         return { success: true, email: subscriber.email, messageId: emailResponse.data?.id };
       } catch (error) {
         console.error(`Failed to send email to ${subscriber.email}:`, error);
-        return { success: false, email: subscriber.email, error: error.message };
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        return { success: false, email: subscriber.email, error: errorMessage };
       }
     });
 

@@ -192,6 +192,7 @@ All colors MUST be HSL. Rich blues and purples with sophisticated gradients.
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
   }
   
   /* Mobile-first optimizations */
@@ -276,9 +277,61 @@ All colors MUST be HSL. Rich blues and purples with sophisticated gradients.
     padding-left: 1.5rem;
   }
 
+  .article-content ul {
+    list-style-type: disc;
+    list-style-position: outside;
+  }
+
+  .article-content ol {
+    list-style-type: decimal;
+    list-style-position: outside;
+  }
+
+  .article-content ul ul {
+    list-style-type: circle;
+    margin-top: 0.5rem;
+  }
+
+  .article-content ul ul ul {
+    list-style-type: square;
+  }
+
   .article-content li {
     margin-bottom: 0.5rem;
     line-height: 1.7;
+    display: list-item;
+  }
+
+  .article-content li::marker {
+    color: hsl(var(--foreground));
+  }
+
+  .article-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    border: 1px solid hsl(var(--border));
+  }
+
+  .article-content table th,
+  .article-content table td {
+    border: 1px solid hsl(var(--border));
+    padding: 0.75rem 1rem;
+    text-align: left;
+  }
+
+  .article-content table th {
+    background: hsl(var(--muted));
+    font-weight: 600;
+    color: hsl(var(--text-heading));
+  }
+
+  .article-content table tr:nth-child(even) {
+    background: hsl(var(--muted) / 0.3);
+  }
+
+  .article-content table tr:hover {
+    background: hsl(var(--muted) / 0.5);
   }
   
   .article-content img {

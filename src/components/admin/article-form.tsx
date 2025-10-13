@@ -13,7 +13,7 @@ import { AIAssistantPanel } from './ai-assistant-panel';
 import { ArticlePremiumControls } from './article-premium-controls';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { Upload, Eye, Save, Send, X, Clock, CheckCircle } from 'lucide-react';
+import { Upload, Eye, Save, Send, X, Clock, CheckCircle, Youtube, Sparkles, ClipboardCheck } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import slugify from 'slugify';
 import { z } from 'zod';
@@ -74,6 +74,13 @@ export function ArticleForm({ article, onSave }: ArticleFormProps) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [newTag, setNewTag] = useState('');
+  const [isFormattingContent, setIsFormattingContent] = useState(false);
+  const [isHumanizing, setIsHumanizing] = useState(false);
+  const [isSeoOptimizing, setIsSeoOptimizing] = useState(false);
+  const [isBoldingKeywords, setIsBoldingKeywords] = useState(false);
+  const [isCheckingReadiness, setIsCheckingReadiness] = useState(false);
+  const [readinessReport, setReadinessReport] = useState<any>(null);
+  const [isExtractingTags, setIsExtractingTags] = useState(false);
   
   // Auto-save states
   const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
@@ -375,6 +382,8 @@ export function ArticleForm({ article, onSave }: ArticleFormProps) {
         affiliate_products_enabled: formData.affiliate_products_enabled !== false,
       } as any;
 
+      let savedArticleId = article?.id;
+
       if (article?.id) {
         const { error } = await supabase
           .from('articles')
@@ -386,17 +395,40 @@ export function ArticleForm({ article, onSave }: ArticleFormProps) {
           description: `Article ${isDraft ? 'saved as draft' : 'published'} successfully.`,
         });
       } else {
-        const { error } = await supabase
+        const { data: newArticle, error } = await supabase
           .from('articles')
           .insert({
             ...articleData,
             created_at: now,
-          });
+          })
+          .select('id')
+          .single();
         if (error) throw error;
+        savedArticleId = newArticle?.id;
         toast({
           title: isDraft ? 'Draft created' : 'Article Published',
           description: `Article ${isDraft ? 'saved as draft' : 'published'} successfully.`,
         });
+      }
+
+      // Auto-ping search engines if publishing (not draft)
+      if (!isDraft && savedArticleId) {
+        try {
+          const { error: pingError } = await supabase.functions.invoke('notify-search-engines', {
+            body: { articleId: savedArticleId }
+          });
+          
+          if (!pingError) {
+            toast({
+              title: "✅ Sitemap pinged successfully!",
+              description: "Google & Bing notified — indexing requested!",
+              duration: 5000,
+            });
+          }
+        } catch (err) {
+          console.error('Failed to notify search engines:', err);
+          // Don't show error toast - this is a background operation
+        }
       }
 
       // Clear draft from localStorage after successful save
@@ -452,6 +484,353 @@ export function ArticleForm({ article, onSave }: ArticleFormProps) {
 
   const removeTag = (tagToRemove: string) => {
     updateFormData({ tags: formData.tags.filter(tag => tag !== tagToRemove) });
+  };
+
+  const handleExtractTags = async () => {
+    if (!formData.content?.trim() && !formData.title?.trim()) {
+      toast({
+        title: "No Content",
+        description: "Please add title and content before extracting tags.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsExtractingTags(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-proxy', {
+        body: {
+          task: 'extract-tags',
+          title: formData.title,
+          content: formData.content,
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.result) {
+        const extractedTags = Array.isArray(data.result) 
+          ? data.result 
+          : data.result.split(',').map((t: string) => t.trim());
+        
+        const validTags = extractedTags
+          .filter((tag: string) => tag && tag.length > 0)
+          .slice(0, 20);
+        
+        if (validTags.length === 0) {
+          toast({
+            title: "No Tags Found",
+            description: "AI couldn't extract relevant tags from the content.",
+          });
+          return;
+        }
+
+        updateFormData({ tags: validTags });
+        toast({
+          title: "Tags Extracted",
+          description: `Successfully extracted ${validTags.length} relevant tags.`,
+        });
+      } else {
+        toast({
+          title: "Extraction Failed",
+          description: "AI response was empty. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error('Tag extraction error:', error);
+      toast({
+        title: "Extraction Failed",
+        description: error?.message || "Failed to extract tags. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExtractingTags(false);
+    }
+  };
+
+  const handleFormatContent = async () => {
+    if (!formData.content?.trim()) {
+      toast({
+        title: "No Content",
+        description: "Please add some content first before formatting.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsFormattingContent(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-proxy', {
+        body: {
+          task: 'format-seo-content',
+          content: formData.content,
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.result) {
+        const raw: string = data.result as string;
+        const cleaned = raw
+          .replace(/^```(?:html)?\n?/i, '')
+          .replace(/```$/i, '')
+          .trim();
+
+        if (!cleaned) {
+          toast({
+            title: "No Changes Returned",
+            description: "The AI didn't return any formatted content.",
+          });
+          return;
+        }
+
+        const prev = (formData.content || '').trim();
+        if (cleaned === prev) {
+          toast({
+            title: "No Changes Detected",
+            description: "Content appears already formatted.",
+          });
+          return;
+        }
+
+        updateFormData({ content: cleaned });
+        toast({
+          title: "Content Formatted",
+          description: "Your content has been optimized with SEO formatting, headings, keywords, and placeholders.",
+        });
+      } else {
+        toast({
+          title: "Formatting Failed",
+          description: "AI response was empty. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error('Content formatting error:', error);
+      toast({
+        title: "Formatting Failed",
+        description: error?.message || "Failed to format content. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsFormattingContent(false);
+    }
+  };
+
+  const handleHumanizeContent = async () => {
+    if (!formData.content?.trim()) {
+      toast({
+        title: "No Content",
+        description: "Please add some content first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsHumanizing(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-proxy', {
+        body: {
+          task: 'humanize-content',
+          content: formData.content,
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.result) {
+        const raw: string = data.result as string;
+        const cleaned = raw
+          .replace(/^```(?:html)?\n?/i, '')
+          .replace(/```$/i, '')
+          .trim();
+        
+        if (!cleaned) {
+          toast({
+            title: "No Changes",
+            description: "Content appears already humanized.",
+          });
+          return;
+        }
+
+        updateFormData({ content: cleaned });
+        toast({
+          title: "Content Humanized",
+          description: "Your content has been rewritten to sound more natural and engaging.",
+        });
+      }
+    } catch (error: any) {
+      console.error('Humanize error:', error);
+      toast({
+        title: "Humanization Failed",
+        description: error?.message || "Failed to humanize content.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsHumanizing(false);
+    }
+  };
+
+  const handleSeoOptimize = async () => {
+    if (!formData.content?.trim()) {
+      toast({
+        title: "No Content",
+        description: "Please add some content first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSeoOptimizing(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-proxy', {
+        body: {
+          task: 'seo-optimize',
+          content: formData.content,
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.result) {
+        const raw: string = data.result as string;
+        const cleaned = raw
+          .replace(/^```(?:html)?\n?/i, '')
+          .replace(/```$/i, '')
+          .trim();
+        
+        if (!cleaned) {
+          toast({
+            title: "No Changes",
+            description: "Content is already SEO optimized.",
+          });
+          return;
+        }
+
+        updateFormData({ content: cleaned });
+        toast({
+          title: "SEO Optimized",
+          description: "Keywords and phrases have been replaced to improve SEO score.",
+        });
+      }
+    } catch (error: any) {
+      console.error('SEO optimize error:', error);
+      toast({
+        title: "Optimization Failed",
+        description: error?.message || "Failed to optimize content for SEO.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSeoOptimizing(false);
+    }
+  };
+
+  const handleBoldKeywords = async () => {
+    if (!formData.content?.trim()) {
+      toast({
+        title: "No Content",
+        description: "Please add some content first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsBoldingKeywords(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-proxy', {
+        body: {
+          task: 'bold-keywords',
+          content: formData.content,
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.result) {
+        const raw: string = data.result as string;
+        const cleaned = raw
+          .replace(/^```(?:html)?\n?/i, '')
+          .replace(/```$/i, '')
+          .trim();
+        
+        if (!cleaned) {
+          toast({
+            title: "No Changes",
+            description: "Keywords already appear to be highlighted.",
+          });
+          return;
+        }
+
+        updateFormData({ content: cleaned });
+        toast({
+          title: "Keywords Bolded",
+          description: "Important keywords have been automatically bolded in your content.",
+        });
+      }
+    } catch (error: any) {
+      console.error('Bold keywords error:', error);
+      toast({
+        title: "Bolding Failed",
+        description: error?.message || "Failed to bold keywords.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsBoldingKeywords(false);
+    }
+  };
+
+  const handleCheckReadiness = async () => {
+    if (!formData.title?.trim() || !formData.content?.trim()) {
+      toast({
+        title: "Incomplete Article",
+        description: "Please add title and content before checking readiness.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsCheckingReadiness(true);
+    setReadinessReport(null);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('check-article-readiness', {
+        body: {
+          title: formData.title,
+          content: formData.content,
+          excerpt: formData.excerpt,
+          meta_title: formData.meta_title,
+          meta_description: formData.meta_description,
+          tags: formData.tags,
+          category_id: formData.category_id,
+          image_url: formData.image_url,
+        }
+      });
+
+      if (error) throw error;
+
+      if (data) {
+        setReadinessReport(data);
+        toast({
+          title: "Readiness Check Complete",
+          description: data.readinessMessage,
+        });
+      }
+    } catch (error: any) {
+      console.error('Readiness check error:', error);
+      toast({
+        title: "Check Failed",
+        description: error?.message || "Failed to check article readiness.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCheckingReadiness(false);
+    }
   };
 
   return (
@@ -557,7 +936,81 @@ export function ArticleForm({ article, onSave }: ArticleFormProps) {
           {/* Content Editor */}
           <Card>
             <CardHeader>
-              <CardTitle>Content</CardTitle>
+              <div className="space-y-4">
+                <div>
+                  <CardTitle>Content</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Use the rich text editor below. Click the <Youtube className="inline h-3 w-3" /> video button in the toolbar to embed YouTube videos.
+                  </p>
+                </div>
+                
+                {/* AI Action Buttons */}
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleHumanizeContent}
+                    disabled={isHumanizing || !formData.content?.trim()}
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    {isHumanizing ? 'Humanizing...' : 'Humanize Content'}
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSeoOptimize}
+                    disabled={isSeoOptimizing || !formData.content?.trim()}
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    {isSeoOptimizing ? 'Optimizing...' : 'SEO Optimize'}
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleBoldKeywords}
+                    disabled={isBoldingKeywords || !formData.content?.trim()}
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                  {isBoldingKeywords ? 'Bolding...' : 'Bold Keywords'}
+                </Button>
+                
+                <Button
+                  onClick={handleCheckReadiness}
+                  disabled={isCheckingReadiness || !formData.title?.trim() || !formData.content?.trim()}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  <ClipboardCheck className="mr-2 h-4 w-4" />
+                  {isCheckingReadiness ? 'Checking...' : 'Check Readiness'}
+                </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleFormatContent}
+                    disabled={isFormattingContent || !formData.content?.trim()}
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    {isFormattingContent ? 'Formatting...' : 'Format with AI'}
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExtractTags}
+                    disabled={isExtractingTags || (!formData.content?.trim() && !formData.title?.trim())}
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    {isExtractingTags ? 'Extracting...' : 'Extract Tags'}
+                  </Button>
+                </div>
+                
+                <p className="text-xs text-primary/80">
+                  💡 Tip: Use these AI tools to humanize your text, improve SEO, highlight keywords, or fully format your content!
+                </p>
+              </div>
             </CardHeader>
             <CardContent>
               <RichTextEditor
@@ -565,6 +1018,118 @@ export function ArticleForm({ article, onSave }: ArticleFormProps) {
                 onChange={(content) => updateFormData({ content })}
                 placeholder="Start writing your article..."
               />
+            </CardContent>
+          </Card>
+
+          {/* Article Readiness Report */}
+          {readinessReport && (
+            <Card className={`border-2 ${
+              readinessReport.readinessColor === 'green' ? 'border-green-500 bg-green-50 dark:bg-green-950' :
+              readinessReport.readinessColor === 'blue' ? 'border-blue-500 bg-blue-50 dark:bg-blue-950' :
+              readinessReport.readinessColor === 'yellow' ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-950' :
+              'border-red-500 bg-red-50 dark:bg-red-950'
+            }`}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <ClipboardCheck className="h-5 w-5" />
+                    Article Readiness Report
+                  </CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setReadinessReport(null)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="mt-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-2xl font-bold">{readinessReport.overallScore}%</span>
+                    <Badge className={
+                      readinessReport.readinessColor === 'green' ? 'bg-green-500' :
+                      readinessReport.readinessColor === 'blue' ? 'bg-blue-500' :
+                      readinessReport.readinessColor === 'yellow' ? 'bg-yellow-500' :
+                      'bg-red-500'
+                    }>
+                      {readinessReport.readinessLevel}
+                    </Badge>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                    <div
+                      className={`h-2.5 rounded-full ${
+                        readinessReport.readinessColor === 'green' ? 'bg-green-500' :
+                        readinessReport.readinessColor === 'blue' ? 'bg-blue-500' :
+                        readinessReport.readinessColor === 'yellow' ? 'bg-yellow-500' :
+                        'bg-red-500'
+                      }`}
+                      style={{ width: `${readinessReport.overallScore}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-sm mt-2">{readinessReport.readinessMessage}</p>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {readinessReport.checks.map((check: any, index: number) => (
+                  <div key={index} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold">{check.category}</h4>
+                      <Badge variant="outline">
+                        {check.score}/{check.maxScore}
+                      </Badge>
+                    </div>
+                    
+                    {check.issues.length > 0 && (
+                      <div className="mt-3">
+                        <p className="text-sm font-medium text-red-600 dark:text-red-400 mb-1">Issues:</p>
+                        <ul className="list-disc list-inside space-y-1">
+                          {check.issues.map((issue: string, i: number) => (
+                            <li key={i} className="text-sm text-muted-foreground">{issue}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    
+                    {check.suggestions.length > 0 && (
+                      <div className="mt-3">
+                        <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-1">Suggestions:</p>
+                        <ul className="list-disc list-inside space-y-1">
+                          {check.suggestions.map((suggestion: string, i: number) => (
+                            <li key={i} className="text-sm text-muted-foreground">{suggestion}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* E-E-A-T Guidelines */}
+          <Card className="border-primary/20 bg-primary/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-primary" />
+                E-E-A-T Guidelines for Quality Content
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div>
+                <strong className="text-primary">Experience:</strong> Share personal insights and first-hand knowledge in your writing.
+              </div>
+              <div>
+                <strong className="text-primary">Expertise:</strong> Demonstrate subject matter knowledge with accurate, well-researched content.
+              </div>
+              <div>
+                <strong className="text-primary">Authoritativeness:</strong> Cite credible sources and link to authoritative references.
+              </div>
+              <div>
+                <strong className="text-primary">Trustworthiness:</strong> Be transparent, fact-check thoroughly, and maintain editorial integrity.
+              </div>
+              <div className="pt-2 border-t">
+                <strong>Tips:</strong> Use the video embed feature to add multimedia content. Include your unique author perspective. Update your profile with credentials.
+              </div>
             </CardContent>
           </Card>
 

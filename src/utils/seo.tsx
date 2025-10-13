@@ -203,6 +203,9 @@ export function generateArticleStructuredData(article: {
   title: string;
   description: string;
   author: string;
+  authorUsername?: string;
+  authorBio?: string;
+  authorJobTitle?: string;
   publishedTime: string;
   modifiedTime: string;
   image?: string;
@@ -227,6 +230,14 @@ export function generateArticleStructuredData(article: {
     "author": {
       "@type": "Person",
       "name": article.author,
+      "alternateName": article.authorUsername,
+      "jobTitle": article.authorJobTitle || "Journalist",
+      "description": article.authorBio || "Contributing writer at TheBulletinBriefs",
+      "url": article.authorUsername ? `${window.location.origin}/author/${article.authorUsername}` : undefined,
+      "affiliation": {
+        "@type": "NewsMediaOrganization",
+        "name": "TheBulletinBriefs"
+      }
     },
     "publisher": {
       "@type": "NewsMediaOrganization",
@@ -238,6 +249,9 @@ export function generateArticleStructuredData(article: {
         "width": 200,
         "height": 60,
       },
+      "publishingPrinciples": `${window.location.origin}/editorial-guidelines`,
+      "ethicsPolicy": `${window.location.origin}/editorial-guidelines`,
+      "foundingDate": "2024"
     },
     "datePublished": article.publishedTime,
     "dateModified": article.modifiedTime,
@@ -245,6 +259,13 @@ export function generateArticleStructuredData(article: {
     "url": article.url,
     "inLanguage": "en-US",
     "isAccessibleForFree": true,
+    "backstory": "Original reporting from TheBulletinBriefs newsroom",
+    "creditText": article.author,
+    "copyrightHolder": {
+      "@type": "NewsMediaOrganization",
+      "name": "TheBulletinBriefs"
+    },
+    "copyrightYear": new Date(article.publishedTime).getFullYear(),
     ...(article.keywords && {
       "keywords": article.keywords.join(", "),
     }),

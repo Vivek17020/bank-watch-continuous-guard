@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -38,22 +38,25 @@ import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
 import Disclaimer from "./pages/Disclaimer";
 import WebsiteAudit from "./pages/WebsiteAudit";
-import SEOAudit from "./pages/SEOAudit";
+import AuditReport from "./pages/AuditReport";
 
+const GovernmentExams = lazy(() => import("@/pages/GovernmentExams"));
+const GovernmentExamPapers = lazy(() => import("@/pages/GovernmentExamPapers"));
+const AdminExamPapers = lazy(() => import("@/pages/AdminExamPapers"));
 
 const App = () => {
   return (
     <HelmetProvider>
-      
-        <ThemeProvider>
-          <AuthProvider>
-            <TooltipProvider>
-              <BrowserRouter>
-                <ErrorBoundary>
-                  <CSPHeaders />
-                  <OptimizedCoreWebVitals />
-                  <Toaster />
-                  <Sonner />
+      <ThemeProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <BrowserRouter>
+              <ErrorBoundary>
+                <CSPHeaders />
+                <OptimizedCoreWebVitals />
+                <Toaster />
+                <Sonner />
+                <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}>
                   <Routes>
                     {/* Public Routes */}
                     <Route path="/" element={<NewsHomepage />} />
@@ -74,8 +77,9 @@ const App = () => {
                     <Route path="/cookies" element={<CookiePolicy />} />
                     <Route path="/disclaimer" element={<Disclaimer />} />
                     <Route path="/audit" element={<WebsiteAudit />} />
-                    <Route path="/seo-audit" element={<SEOAudit />} />
                     <Route path="/auth" element={<Auth />} />
+                    <Route path="/government-exams" element={<GovernmentExams />} />
+                    <Route path="/government-exams/:slug" element={<GovernmentExamPapers />} />
                     
                     {/* Admin Routes */}
                     <Route path="/admin/login" element={<AdminLogin />} />
@@ -85,18 +89,20 @@ const App = () => {
                       <Route path="articles/new" element={<AdminNewArticle />} />
                       <Route path="articles/:id/edit" element={<AdminEditArticle />} />
                       <Route path="engagement" element={<AdminEngagement />} />
+                      <Route path="audit-report" element={<AuditReport />} />
                       <Route path="settings" element={<AdminSettings />} />
+                      <Route path="exam-papers" element={<AdminExamPapers />} />
                     </Route>
                     
                     {/* Catch-all route */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
-                </ErrorBoundary>
-              </BrowserRouter>
-            </TooltipProvider>
-          </AuthProvider>
-        </ThemeProvider>
-      
+                </Suspense>
+              </ErrorBoundary>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </HelmetProvider>
   );
 };

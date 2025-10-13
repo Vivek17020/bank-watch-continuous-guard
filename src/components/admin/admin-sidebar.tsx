@@ -6,7 +6,8 @@ import {
   LayoutDashboard,
   LogOut,
   Pen,
-  BarChart3
+  BarChart3,
+  FileSearch
 } from "lucide-react";
 import {
   Sidebar,
@@ -26,7 +27,9 @@ const navigationItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
   { title: "All Articles", url: "/admin/articles", icon: FileText },
   { title: "New Article", url: "/admin/articles/new", icon: PlusCircle },
+  { title: "Exam Papers", url: "/admin/exam-papers", icon: FileText },
   { title: "Engagement", url: "/admin/engagement", icon: BarChart3 },
+  { title: "SEO Audit", url: "/admin/audit-report", icon: FileSearch },
   { title: "Settings", url: "/admin/settings", icon: Settings },
 ];
 

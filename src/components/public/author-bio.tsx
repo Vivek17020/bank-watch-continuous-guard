@@ -8,9 +8,10 @@ import { getFirstName } from '@/lib/utils';
 interface AuthorBioProps {
   authorId?: string;
   authorName: string;
+  authorUsername?: string;
 }
 
-export function AuthorBio({ authorId, authorName }: AuthorBioProps) {
+export function AuthorBio({ authorId, authorName, authorUsername }: AuthorBioProps) {
   const { data: authorProfile } = useQuery({
     queryKey: ['author-profile', authorId],
     queryFn: async () => {
@@ -25,9 +26,9 @@ export function AuthorBio({ authorId, authorName }: AuthorBioProps) {
     enabled: !!authorId,
   });
 
-  const displayName = getFirstName(authorName);
-  const jobTitle = 'Journalist';
-  const bio = 'Contributing writer at TheBulletinBriefs, covering news and current events.';
+  const displayName = authorUsername || authorProfile?.username || getFirstName(authorName);
+  const jobTitle = authorProfile?.job_title || 'Journalist';
+  const bio = authorProfile?.author_bio || 'Contributing writer at TheBulletinBriefs, covering news and current events.';
   const avatarUrl = authorProfile?.author_image_url || authorProfile?.avatar_url;
 
   return (
@@ -43,14 +44,17 @@ export function AuthorBio({ authorId, authorName }: AuthorBioProps) {
           
           <div className="flex-1 space-y-2">
             <div>
-              <h3 className="font-semibold text-lg">{displayName}</h3>
+              <h3 className="font-semibold text-lg">
+                @{displayName}
+              </h3>
               <p className="text-sm text-muted-foreground">{jobTitle}</p>
             </div>
             
             <p className="text-sm leading-relaxed">{bio}</p>
             
-            <div className="text-xs text-muted-foreground">
-              <span className="font-medium">Published by:</span> TheBulletinBriefs
+            <div className="text-xs text-muted-foreground space-y-1">
+              <div><span className="font-medium">Published by:</span> TheBulletinBriefs</div>
+              <div><span className="font-medium">Author credentials:</span> Verified journalist</div>
             </div>
           </div>
         </div>

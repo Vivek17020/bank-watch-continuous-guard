@@ -53,8 +53,10 @@ export const useTrackReading = () => {
       duration?: number;
       percentage?: number;
     }) => {
-      const ipAddress = await fetch('https://api.ipify.org?format=text')
-        .then(response => response.text())
+      const ipAddress = await fetch('https://api.ipify.org?format=text', {
+        signal: AbortSignal.timeout(3000),
+      })
+        .then(response => response.ok ? response.text() : null)
         .catch(() => null);
 
       const { error } = await supabase
@@ -88,8 +90,10 @@ export const useUserPreferences = () => {
     queryFn: async () => {
       if (!user) {
         // For guest users, try to get by IP
-        const ipAddress = await fetch('https://api.ipify.org?format=text')
-          .then(response => response.text())
+        const ipAddress = await fetch('https://api.ipify.org?format=text', {
+          signal: AbortSignal.timeout(3000),
+        })
+          .then(response => response.ok ? response.text() : null)
           .catch(() => null);
           
         if (!ipAddress) return null;
