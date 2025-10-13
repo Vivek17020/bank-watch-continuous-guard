@@ -69,7 +69,7 @@ export default function PreviousYearPapers() {
 
   const breadcrumbs = [
     { name: "Home", url: window.location.origin },
-    { name: "Education", url: `${window.location.origin}/education/previous-year-papers` },
+    { name: "Jobs", url: `${window.location.origin}/jobs/previous-year-papers` },
     { name: "Previous Year Papers", url: window.location.href }
   ];
 
@@ -109,6 +109,10 @@ export default function PreviousYearPapers() {
             <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
               <Link to="/" className="hover:text-foreground transition-colors">
                 <Home className="h-4 w-4" />
+              </Link>
+              <ChevronRight className="h-4 w-4" />
+              <Link to="/jobs/previous-year-papers" className="hover:text-foreground transition-colors">
+                Jobs
               </Link>
               <ChevronRight className="h-4 w-4" />
               <span className="text-foreground font-medium">Previous Year Papers</span>
@@ -182,7 +186,7 @@ export default function PreviousYearPapers() {
                     </CardHeader>
                     <CardContent>
                       <Button asChild className="w-full">
-                        <Link to={`/education/previous-year-papers/${exam.slug}`}>
+                        <Link to={`/jobs/previous-year-papers/${exam.slug}`}>
                           View Papers
                         </Link>
                       </Button>

@@ -28,6 +28,7 @@ const navigationItems = [
   { title: "All Articles", url: "/admin/articles", icon: FileText },
   { title: "New Article", url: "/admin/articles/new", icon: PlusCircle },
   { title: "Exam Papers", url: "/admin/exam-papers", icon: FileText },
+  { title: "Previous Year Papers", url: "/admin/pyq", icon: FileText },
   { title: "Engagement", url: "/admin/engagement", icon: BarChart3 },
   { title: "SEO Audit", url: "/admin/audit-report", icon: FileSearch },
   { title: "Settings", url: "/admin/settings", icon: Settings },

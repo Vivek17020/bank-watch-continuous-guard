@@ -83,11 +83,12 @@ const App = () => {
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/government-exams" element={<GovernmentExams />} />
           <Route path="/government-exams/:slug" element={<GovernmentExamPapers />} />
-          <Route path="/education/previous-year-papers" element={<PreviousYearPapers />} />
-          <Route path="/education/previous-year-papers/:slug" element={<ExamPaperDetail />} />
-          <Route path="/education/admit-cards" element={<ComingSoon title="Admit Cards" />} />
-          <Route path="/education/results" element={<ComingSoon title="Results" />} />
-          <Route path="/education/syllabus" element={<ComingSoon title="Syllabus" />} />
+          <Route path="/jobs/previous-year-papers" element={<PreviousYearPapers />} />
+          <Route path="/jobs/previous-year-papers/:slug" element={<ExamPaperDetail />} />
+          <Route path="/jobs/admit-cards" element={<ComingSoon title="Admit Cards" />} />
+          <Route path="/jobs/results" element={<ComingSoon title="Results" />} />
+          <Route path="/jobs/syllabus" element={<ComingSoon title="Syllabus" />} />
+          <Route path="/admin/pyq" element={<AdminExamPapers />} />
                     
                     {/* Admin Routes */}
                     <Route path="/admin/login" element={<AdminLogin />} />

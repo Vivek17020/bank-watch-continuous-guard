@@ -19,11 +19,11 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
-  const educationLinks = [
-    { label: "Admit Cards", href: "/education/admit-cards" },
-    { label: "Results", href: "/education/results" },
-    { label: "Syllabus", href: "/education/syllabus" },
-    { label: "Previous Year Papers", href: "/education/previous-year-papers" },
+  const jobsLinks = [
+    { label: "Admit Cards", href: "/jobs/admit-cards" },
+    { label: "Results", href: "/jobs/results" },
+    { label: "Syllabus", href: "/jobs/syllabus" },
+    { label: "Previous Year Papers", href: "/jobs/previous-year-papers" },
   ];
 
   return (
@@ -62,7 +62,7 @@ export function Navbar() {
                 <ChevronDown className="h-3 w-3" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56 bg-background border-border">
-                {educationLinks.map((link) => (
+                {jobsLinks.map((link) => (
                   <DropdownMenuItem key={link.href} asChild>
                     <Link
                       to={link.href}
@@ -141,7 +141,7 @@ export function Navbar() {
             ))}
             <div className="border-t border-border mt-2 pt-2">
               <p className="px-3 py-2 text-sm font-semibold text-foreground">Jobs</p>
-              {educationLinks.map((link) => (
+              {jobsLinks.map((link) => (
                 <Link
                   key={link.href}
                   to={link.href}

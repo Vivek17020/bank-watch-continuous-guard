@@ -44,8 +44,8 @@ export default function ExamPaperDetail() {
 
   const breadcrumbs = [
     { name: "Home", url: window.location.origin },
-    { name: "Education", url: `${window.location.origin}/education/previous-year-papers` },
-    { name: "Previous Year Papers", url: `${window.location.origin}/education/previous-year-papers` },
+    { name: "Jobs", url: `${window.location.origin}/jobs/previous-year-papers` },
+    { name: "Previous Year Papers", url: `${window.location.origin}/jobs/previous-year-papers` },
     { name: examName, url: window.location.href }
   ];
 
@@ -54,11 +54,11 @@ export default function ExamPaperDetail() {
       <>
         <Navbar />
         <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
+            <div className="text-center">
             <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
             <h2 className="text-2xl font-bold mb-2">No papers found</h2>
             <Button asChild className="mt-4">
-              <Link to="/education/previous-year-papers">Back to Exams</Link>
+              <Link to="/jobs/previous-year-papers">Back to Exams</Link>
             </Button>
           </div>
         </div>
@@ -109,7 +109,11 @@ export default function ExamPaperDetail() {
                 <Home className="h-4 w-4" />
               </Link>
               <ChevronRight className="h-4 w-4" />
-              <Link to="/education/previous-year-papers" className="hover:text-foreground transition-colors">
+              <Link to="/jobs/previous-year-papers" className="hover:text-foreground transition-colors">
+                Jobs
+              </Link>
+              <ChevronRight className="h-4 w-4" />
+              <Link to="/jobs/previous-year-papers" className="hover:text-foreground transition-colors">
                 Previous Year Papers
               </Link>
               <ChevronRight className="h-4 w-4" />
