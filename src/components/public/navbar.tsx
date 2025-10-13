@@ -2,16 +2,29 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useCategories } from "@/hooks/use-articles";
-import { FileText, Menu, X, Search } from "lucide-react";
+import { FileText, Menu, X, Search, ChevronDown } from "lucide-react";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SearchDialog } from "@/components/public/search-dialog";
 import { UserMenu } from "@/components/public/user-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
   const { data: categories } = useCategories();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+
+  const educationLinks = [
+    { label: "Admit Cards", href: "/education/admit-cards" },
+    { label: "Results", href: "/education/results" },
+    { label: "Syllabus", href: "/education/syllabus" },
+    { label: "Previous Year Papers", href: "/education/previous-year-papers" },
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -43,6 +56,24 @@ export function Navbar() {
                 {category.name}
               </Link>
             ))}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1 transition-colors hover:text-foreground/80 text-foreground/60 focus:outline-none">
+                Education
+                <ChevronDown className="h-3 w-3" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 bg-background border-border">
+                {educationLinks.map((link) => (
+                  <DropdownMenuItem key={link.href} asChild>
+                    <Link
+                      to={link.href}
+                      className="w-full cursor-pointer"
+                    >
+                      {link.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
         </div>
         
@@ -108,6 +139,19 @@ export function Navbar() {
                 {category.name}
               </Link>
             ))}
+            <div className="border-t border-border mt-2 pt-2">
+              <p className="px-3 py-2 text-sm font-semibold text-foreground">Education</p>
+              {educationLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className="block px-3 py-2 text-base font-medium text-foreground/60 hover:text-foreground pl-6"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       )}

@@ -421,6 +421,7 @@ export type Database = {
       }
       exam_papers: {
         Row: {
+          category: string | null
           created_at: string
           download_count: number | null
           exam_name: string
@@ -434,6 +435,7 @@ export type Database = {
           year: number
         }
         Insert: {
+          category?: string | null
           created_at?: string
           download_count?: number | null
           exam_name: string
@@ -447,6 +449,7 @@ export type Database = {
           year: number
         }
         Update: {
+          category?: string | null
           created_at?: string
           download_count?: number | null
           exam_name?: string

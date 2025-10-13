@@ -43,6 +43,9 @@ import AuditReport from "./pages/AuditReport";
 const GovernmentExams = lazy(() => import("@/pages/GovernmentExams"));
 const GovernmentExamPapers = lazy(() => import("@/pages/GovernmentExamPapers"));
 const AdminExamPapers = lazy(() => import("@/pages/AdminExamPapers"));
+const PreviousYearPapers = lazy(() => import("@/pages/PreviousYearPapers"));
+const ExamPaperDetail = lazy(() => import("@/pages/ExamPaperDetail"));
+const ComingSoon = lazy(() => import("@/pages/ComingSoon"));
 
 const App = () => {
   return (
@@ -79,7 +82,12 @@ const App = () => {
                     <Route path="/audit" element={<WebsiteAudit />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/government-exams" element={<GovernmentExams />} />
-                    <Route path="/government-exams/:slug" element={<GovernmentExamPapers />} />
+          <Route path="/government-exams/:slug" element={<GovernmentExamPapers />} />
+          <Route path="/education/previous-year-papers" element={<PreviousYearPapers />} />
+          <Route path="/education/previous-year-papers/:slug" element={<ExamPaperDetail />} />
+          <Route path="/education/admit-cards" element={<ComingSoon title="Admit Cards" />} />
+          <Route path="/education/results" element={<ComingSoon title="Results" />} />
+          <Route path="/education/syllabus" element={<ComingSoon title="Syllabus" />} />
                     
                     {/* Admin Routes */}
                     <Route path="/admin/login" element={<AdminLogin />} />
@@ -92,6 +100,7 @@ const App = () => {
                       <Route path="audit-report" element={<AuditReport />} />
                       <Route path="settings" element={<AdminSettings />} />
                       <Route path="exam-papers" element={<AdminExamPapers />} />
+                      <Route path="upload-pyqs" element={<AdminExamPapers />} />
                     </Route>
                     
                     {/* Catch-all route */}

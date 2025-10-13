@@ -20,6 +20,7 @@ export default function AdminExamPapers() {
     exam_name: "",
     year: new Date().getFullYear(),
     subject: "",
+    category: "",
     file_url: "",
     file_size: 0,
   });
@@ -93,6 +94,7 @@ export default function AdminExamPapers() {
       exam_name: "",
       year: new Date().getFullYear(),
       subject: "",
+      category: "",
       file_url: "",
       file_size: 0,
     });
@@ -117,6 +119,7 @@ export default function AdminExamPapers() {
       exam_name: paper.exam_name,
       year: paper.year,
       subject: paper.subject || "",
+      category: paper.category || "",
       file_url: paper.file_url,
       file_size: paper.file_size || 0,
     });
@@ -230,6 +233,16 @@ export default function AdminExamPapers() {
               </div>
 
               <div>
+                <Label htmlFor="category">Category</Label>
+                <Input
+                  id="category"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  placeholder="e.g., SSC, Railway, Banking, Defence"
+                />
+              </div>
+
+              <div>
                 <Label htmlFor="file">PDF File *</Label>
                 <div className="flex gap-2">
                   <Input
@@ -280,6 +293,7 @@ export default function AdminExamPapers() {
                 <TableHead>Exam</TableHead>
                 <TableHead className="text-center">Year</TableHead>
                 <TableHead>Subject</TableHead>
+                <TableHead>Category</TableHead>
                 <TableHead className="text-center">Downloads</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -291,6 +305,7 @@ export default function AdminExamPapers() {
                   <TableCell>{paper.exam_name}</TableCell>
                   <TableCell className="text-center">{paper.year}</TableCell>
                   <TableCell>{paper.subject || "—"}</TableCell>
+                  <TableCell>{paper.category || "—"}</TableCell>
                   <TableCell className="text-center">{paper.download_count || 0}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
