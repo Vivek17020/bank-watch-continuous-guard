@@ -58,7 +58,7 @@ export function Navbar() {
             ))}
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-1 transition-colors hover:text-foreground/80 text-foreground/60 focus:outline-none">
-                Education
+                Jobs
                 <ChevronDown className="h-3 w-3" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56 bg-background border-border">
@@ -140,7 +140,7 @@ export function Navbar() {
               </Link>
             ))}
             <div className="border-t border-border mt-2 pt-2">
-              <p className="px-3 py-2 text-sm font-semibold text-foreground">Education</p>
+              <p className="px-3 py-2 text-sm font-semibold text-foreground">Jobs</p>
               {educationLinks.map((link) => (
                 <Link
                   key={link.href}
